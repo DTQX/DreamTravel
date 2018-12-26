@@ -23,7 +23,7 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 
 	//float BoneMass = GetBoneMass(FName("spine_01"), false);
 	//UE_LOG(LogTemp, Warning, TEXT("BoneMass:  %f"), BoneMass);
-/*
+	/*
 	float Mass = GetMass();
 	UE_LOG(LogTemp, Warning, TEXT("BoneMass:  %f"), Mass);*/
 
