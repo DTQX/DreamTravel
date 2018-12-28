@@ -6,6 +6,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "DTSkeletalMeshComponent.generated.h"
 
+#define BoneNums (20)
+
 /**
  * 
  */
@@ -21,13 +23,16 @@ public:
 
 private:
 
-	BoneNames = spine_01, spine_02, spine_03
-		×óÊÖ :ÊÖ±Û upperarm_l, lowerarm_l, hand_l,
-			ÊÖÕÆ£ºmiddle_01_l
-			ÊÖÖ¸Í·£¨ÉÙÒ»½Ø£©£º
-				(0)thumb_02_l, thumb_03_l,
-				(1)index_02_l, index_03_l, 
-				(2)middle_02_l, middle_03_l,
-				(3)ring_02_l, ring_03_l,
-				(4)pinky_02_l, pinky_03_l
+	// BoneNames = spine_01, spine_02, spine_03
+	// 	å·¦æ‰‹ :å·¦æ‰‹ upperarm_l, lowerarm_l, hand_l,
+	// 		æ‰‹æŒï¼Œmiddle_01_l
+	// 		æ‰‹æŒ‡å¤´
+	// 			(0)thumb_02_l, thumb_03_l,
+	// 			(1)index_02_l, index_03_l, 
+	// 			(2)middle_02_l, middle_03_l,
+	// 			(3)ring_02_l, ring_03_l,
+	// 			(4)pinky_02_l, pinky_03_l
+
+	
+	FString[] BoneNames = new string[BoneNums];
 };
