@@ -2,19 +2,25 @@
 
 #include "SerialClass.h"
 
-CSerial::CSerial()
+/*CSerialClass::CSerialClass()
 {
     m_hIDComDev = NULL;
 	m_bOpened = FALSE;
-}
+}*/
 
-CSerial::~CSerial()
+//CSerialClass::~CSerialClass()
+//{
+//    Close();
+//}
+
+void CSerialClass::Initialise()
 {
-    Close();
+	m_hIDComDev = NULL;
+	m_bOpened = FALSE;
 }
 
 //打开串口
-BOOL CSerial::Open(int nPort, int nBaud)
+BOOL CSerialClass::Open(int nPort, int nBaud)
 {
 	if (m_bOpened) return(TRUE);
 
@@ -72,7 +78,7 @@ BOOL CSerial::Open(int nPort, int nBaud)
 }
 
 //关闭串口
-BOOL CSerial::Close(void)
+BOOL CSerialClass::Close(void)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(TRUE);
@@ -87,7 +93,7 @@ BOOL CSerial::Close(void)
 }
 
 //写串口字节
-BOOL CSerial::WriteCommByte(unsigned char ucByte)
+BOOL CSerialClass::WriteCommByte(unsigned char ucByte)
 {
 	BOOL bWriteStat;
 	DWORD dwBytesWritten;
@@ -111,7 +117,7 @@ BOOL CSerial::WriteCommByte(unsigned char ucByte)
 	return(TRUE);
 }
 
-int CSerial::SendData(const char *buffer, int size)
+int CSerialClass::SendData(const char *buffer, int size)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(0);
@@ -126,16 +132,7 @@ int CSerial::SendData(const char *buffer, int size)
 	return((int)dwBytesWritten);
 }
 
-DWORD CSerial::GetBytesInCOM(){
-    DWORD dwErrorFlags;
-    COMSTAT ComStat;
-
-    ClearCommError(m_hIDComDev, &dwErrorFlags, &ComStat);
-    //读取等待中的数据字节数
-	return (DWORD)ComStat.cbInQue;
-}
-
-int CSerial::ReadData(void *buffer, int limit)
+int CSerialClass::ReadData(void *buffer, int limit)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(0);
@@ -143,14 +140,11 @@ int CSerial::ReadData(void *buffer, int limit)
 	BOOL bReadStatus;
 	DWORD dwBytesRead, dwErrorFlags;
 	COMSTAT ComStat;
-
+	//获取com流中等待的自己数
 	ClearCommError(m_hIDComDev, &dwErrorFlags, &ComStat);
-    // TODO  查看DWORD类型
-    //读取等待中的数据字节数
-	dwBytesRead = GetBytesInCOM();
-    //如果没有可读数据，则直接返回
-	if (!dwBytesRead) return(0);
+	if (!ComStat.cbInQue) return(0);
 
+	dwBytesRead = (DWORD)ComStat.cbInQue;
 	if (limit < (int)dwBytesRead) dwBytesRead = (DWORD)limit;
 
 	bReadStatus = ReadFile(m_hIDComDev, buffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);

@@ -20,7 +20,7 @@ public:
 	virtual void InitializeComponent() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 	virtual void BeginPlay() override;
-
+	void Test();
 private:
 
 	// BoneNames = spine_01, spine_02, spine_03
@@ -33,6 +33,7 @@ private:
 	// 			(3)ring_02_l, ring_03_l,
 	// 			(4)pinky_02_l, pinky_03_l
 
-	
-	FString[] BoneNames = new string[BoneNums];
+	//TMap<FString, >
+
+	//GetBoneAxis 获取骨骼的方向向量
 };

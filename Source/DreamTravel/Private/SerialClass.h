@@ -19,27 +19,25 @@
 /**
  * 
  */
-class CSerial
+class CSerialClass
 {
 public:
-	CSerial();
-	~CSerial();
+	static void Initialise();
+	static BOOL Open(int nPort = 2, int nBaud = 9600);
+	static BOOL Close(void);
 
-	BOOL Open(int nPort = 2, int nBaud = 9600);
-	BOOL Close(void);
+	static int ReadData(void *, int);
+	static int SendData(const char *, int);
+	static int ReadDataWaiting(void);
 
-	int ReadData(void *, int);
-	int SendData(const char *, int);
-	int ReadDataWaiting(void);
-
-	BOOL IsOpened(void){ return(m_bOpened); }
+	static BOOL IsOpened(void){ return(m_bOpened); }
 
 protected:
-	BOOL WriteCommByte(unsigned char);
+	static BOOL WriteCommByte(unsigned char);
 
-	HANDLE m_hIDComDev;
-	OVERLAPPED m_OverlappedRead, m_OverlappedWrite;
-	BOOL m_bOpened;
+	static HANDLE m_hIDComDev;
+	static OVERLAPPED m_OverlappedRead, m_OverlappedWrite;
+	static BOOL m_bOpened;
 
 };
 
