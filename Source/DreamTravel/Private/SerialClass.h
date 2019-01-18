@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+#pragma once
 
+#include "CoreMinimal.h"
 #ifndef __SERIAL_H__
 #define __SERIAL_H__
 
@@ -13,8 +15,9 @@
 #define ASCII_XON       0x11
 #define ASCII_XOFF      0x13
 
-#include "windows.h"
-#include "AllowWindowsPlatformTypes.h"
+//应该包含MinWindows.h，不然会报错
+#include "Windows/MinWindows.h"
+//#include "AllowWindowsPlatformTypes.h"
 
 /**
  * 
@@ -22,23 +25,25 @@
 class CSerialClass
 {
 public:
-	static void Initialise();
-	static BOOL Open(int nPort = 2, int nBaud = 9600);
-	static BOOL Close(void);
+	CSerialClass();
+	~CSerialClass();
 
-	static int ReadData(void *, int);
-	static int SendData(const char *, int);
-	static int ReadDataWaiting(void);
+	 void Initialise();
+	 BOOL Open(int nPort = 2, int nBaud = 9600);
+	 BOOL Close(void);
 
-	static BOOL IsOpened(void){ return(m_bOpened); }
+	 int ReadData(void *, int);
+	 int SendData(const char *, int);
+	 int ReadDataWaiting(void);
+
+	 BOOL IsOpened(void){ return(m_bOpened); }
 
 protected:
-	static BOOL WriteCommByte(unsigned char);
+	 BOOL WriteCommByte(unsigned char);
 
-	static HANDLE m_hIDComDev;
-	static OVERLAPPED m_OverlappedRead, m_OverlappedWrite;
-	static BOOL m_bOpened;
-
+	 HANDLE m_hIDComDev;
+	 OVERLAPPED m_OverlappedRead, m_OverlappedWrite;
+	 BOOL m_bOpened;
 };
 
 #endif

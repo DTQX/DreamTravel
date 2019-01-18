@@ -2,16 +2,16 @@
 
 #include "SerialClass.h"
 
-/*CSerialClass::CSerialClass()
+CSerialClass::CSerialClass()
 {
-    m_hIDComDev = NULL;
-	m_bOpened = FALSE;
-}*/
+    
+}
 
-//CSerialClass::~CSerialClass()
-//{
-//    Close();
-//}
+CSerialClass::~CSerialClass()
+{
+    Close();
+	UE_LOG(LogTemp, Warning, TEXT("Serial closed !"));
+}
 
 void CSerialClass::Initialise()
 {
@@ -27,12 +27,21 @@ BOOL CSerialClass::Open(int nPort, int nBaud)
 	TCHAR szPort[15];
 	TCHAR szComParams[50];
 	DCB dcb;
-
+	
     //构建字符串，如COM3
-	wsprintf(szPort, _T("COM%d"), nPort);
+	wsprintf(szPort, _T("com%d"), nPort);
+	//// 将ansi字符串转换为unicode字符串  
+	//dword dwnum = multibytetowidechar(cp_acp, 0, szport, -1, null, 0);
+	//wchar_t *pwtext = new wchar_t[dwnum];
+	//if (!multibytetowidechar(cp_acp, 0, szport, -1, pwtext, dwnum))
+	//{
+	//	
+	//}
     //打开串口
 	m_hIDComDev = CreateFile(szPort, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
 	if (m_hIDComDev == NULL) return(FALSE);
+
+
 
     //初始化Overlap
 	memset(&m_OverlappedRead, 0, sizeof(OVERLAPPED));
@@ -146,15 +155,19 @@ int CSerialClass::ReadData(void *buffer, int limit)
 
 	dwBytesRead = (DWORD)ComStat.cbInQue;
 	if (limit < (int)dwBytesRead) dwBytesRead = (DWORD)limit;
-
+	UE_LOG(LogTemp, Warning, TEXT("将要读取数据。。。time %f"), FPlatformTime::Seconds());
 	bReadStatus = ReadFile(m_hIDComDev, buffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
+	UE_LOG(LogTemp, Warning, TEXT("3将要读取数据。。。time %f"), FPlatformTime::Seconds());
 	if (!bReadStatus){
 		if (GetLastError() == ERROR_IO_PENDING){
+			UE_LOG(LogTemp, Warning, TEXT("2将要读取数据。。。time %f"), FPlatformTime::Seconds());
 			WaitForSingleObject(m_OverlappedRead.hEvent, 2000);
+			UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), FPlatformTime::Seconds());
+//			UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), GetWorld()->GetTimeSeconds());
 			return((int)dwBytesRead);
 		}
 		return(0);
 	}
-
+	//UE_LOG(LogTemp, Warning, TEXT("连接失败，正在重连。。。"));
 	return((int)dwBytesRead);
 }

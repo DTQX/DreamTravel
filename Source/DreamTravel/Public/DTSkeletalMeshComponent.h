@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "SerialClass.h"
 #include "DTSkeletalMeshComponent.generated.h"
+
 
 #define BoneNums (20)
 
@@ -21,6 +23,7 @@ public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 	virtual void BeginPlay() override;
 	void Test();
+	virtual void BeginDestroy() override;
 private:
 
 	// BoneNames = spine_01, spine_02, spine_03
@@ -36,4 +39,5 @@ private:
 	//TMap<FString, >
 
 	//GetBoneAxis 获取骨骼的方向向量
+	CSerialClass cSerialClass;
 };
