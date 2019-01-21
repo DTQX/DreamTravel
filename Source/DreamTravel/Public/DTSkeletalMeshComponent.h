@@ -40,4 +40,6 @@ private:
 
 	//GetBoneAxis 获取骨骼的方向向量
 	CSerialClass cSerialClass;
+
+	//FString BoneNames = ["spine_01"];
 };

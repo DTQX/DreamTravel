@@ -34,7 +34,7 @@ public:
 
 	 int ReadData(void *, int);
 	 int SendData(const char *, int);
-	 int ReadDataWaiting(void);
+	 
 
 	 BOOL IsOpened(void){ return(m_bOpened); }
 
