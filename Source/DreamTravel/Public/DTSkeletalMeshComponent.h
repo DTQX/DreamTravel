@@ -42,4 +42,5 @@ private:
 	CSerialClass cSerialClass;
 
 	FName BoneNames[BoneNums] = {FName("spine_01"),FName("spine_02"), FName("spine_03"), };
+
 };
