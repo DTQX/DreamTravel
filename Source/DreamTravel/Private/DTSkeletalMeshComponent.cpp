@@ -15,8 +15,8 @@ void UDTSkeletalMeshComponent::InitializeComponent()
 void UDTSkeletalMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	cSerialClass = CSerialClass();
-	cSerialClass.Initialise();
+	CPacketManage = CPacketManage();
+	// CPacketManage.Initialise();
 
 
 	//连接DreamTravel，不断尝试连接，不连接成功，不进行下一步，或者直接退出
@@ -38,16 +38,14 @@ void UDTSkeletalMeshComponent::BeginPlay()
 void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (cSerialClass.IsOpened() == false) {
-		if (cSerialClass.Open(4, 115200) == false) {
-			UE_LOG(LogTemp, Warning, TEXT("连接失败，正在重连。。。"));
+    //连接
+	if (CPacketManage.IsConnected() == false) {
+		if (CPacketManage.Connect(DeltaTime) == false) {
 			return;
 		}
-		return;
 	}
 	
 	
-	UE_LOG(LogTemp, Warning, TEXT("连接成功"));
 	char buff[100];
 	
 	cSerialClass.ReadData(buff, 30);

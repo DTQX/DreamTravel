@@ -4,7 +4,8 @@
 
 CSerialClass::CSerialClass()
 {
-    
+    m_hIDComDev = NULL;
+	m_bOpened = FALSE;
 }
 
 CSerialClass::~CSerialClass()
@@ -15,8 +16,7 @@ CSerialClass::~CSerialClass()
 
 void CSerialClass::Initialise()
 {
-	m_hIDComDev = NULL;
-	m_bOpened = FALSE;
+
 }
 
 //打开串口

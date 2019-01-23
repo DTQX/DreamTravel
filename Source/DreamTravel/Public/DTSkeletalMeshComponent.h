@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "SerialClass.h"
+#include "PacketManage.h"
 #include "DTSkeletalMeshComponent.generated.h"
 
 
@@ -39,8 +39,11 @@ private:
 	//TMap<FString, >
 
 	//GetBoneAxis 获取骨骼的方向向量
-	CSerialClass cSerialClass;
-
-	FName BoneNames[BoneNums] = {FName("spine_01"),FName("spine_02"), FName("spine_03"), };
+	CPacketManage CPacketManage;
+    //记录需要操作的骨骼名
+	FName BoneNames[BoneNums] = {
+        FName("spine_01"),FName("spine_02"), FName("spine_03"), FName(""),FName(""),    //脊椎
+        FName("upperarm_l"),FName("lowerarm_l"),FName("hand_l"),FName("middle_01_l"),FName(""),FName(""),
+    };
 
 };
