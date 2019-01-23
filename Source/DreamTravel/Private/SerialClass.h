@@ -2,6 +2,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
+
 #ifndef __SERIAL_H__
 #define __SERIAL_H__
 
@@ -15,7 +17,7 @@
 #define ASCII_XON       0x11
 #define ASCII_XOFF      0x13
 
-//Ó¦¸Ã°üº¬MinWindows.h£¬²»È»»á±¨´í
+//Ó¦ï¿½Ã°ï¿½ï¿½ï¿½MinWindows.hï¿½ï¿½ï¿½ï¿½È»ï¿½á±¨ï¿½ï¿½
 #include "Windows/MinWindows.h"
 //#include "AllowWindowsPlatformTypes.h"
 

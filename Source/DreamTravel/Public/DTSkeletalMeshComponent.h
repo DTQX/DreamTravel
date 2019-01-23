@@ -7,6 +7,7 @@
 #include "PacketManage.h"
 #include "DTSkeletalMeshComponent.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
 
 #define BoneNums (20)
 
@@ -45,5 +46,9 @@ private:
         FName("spine_01"),FName("spine_02"), FName("spine_03"), FName(""),FName(""),    //脊椎
         FName("upperarm_l"),FName("lowerarm_l"),FName("hand_l"),FName("middle_01_l"),FName(""),FName(""),
     };
+    FQuat AvatarBonePoses[BoneNums];
+    FQuat PlayerBonePoses[BoneNums];
+
+    void Init();
 
 };

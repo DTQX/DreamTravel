@@ -2,6 +2,8 @@
 
 #include "PacketManage.h"
 
+DEFINE_LOG_CATEGORY(CSerialClass);
+
 CPacketManage::CPacketManage()
 {
     CSerialClass = CSerialClass();

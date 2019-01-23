@@ -2,6 +2,8 @@
 
 #include "SerialClass.h"
 
+DEFINE_LOG_CATEGORY(CSerialClass);
+
 CSerialClass::CSerialClass()
 {
     m_hIDComDev = NULL;
@@ -30,13 +32,6 @@ BOOL CSerialClass::Open(int nPort, int nBaud)
 	
     //构建字符串，如COM3
 	wsprintf(szPort, _T("com%d"), nPort);
-	//// 将ansi字符串转换为unicode字符串  
-	//dword dwnum = multibytetowidechar(cp_acp, 0, szport, -1, null, 0);
-	//wchar_t *pwtext = new wchar_t[dwnum];
-	//if (!multibytetowidechar(cp_acp, 0, szport, -1, pwtext, dwnum))
-	//{
-	//	
-	//}
     //打开串口
 	m_hIDComDev = CreateFile(szPort, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
 	if (m_hIDComDev == NULL) return(FALSE);

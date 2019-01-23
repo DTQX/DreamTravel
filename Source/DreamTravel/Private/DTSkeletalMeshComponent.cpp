@@ -2,7 +2,9 @@
 
 #include "DTSkeletalMeshComponent.h"
 
-#include "SerialPort.h" 
+// #include "SerialPort.h" 
+
+DEFINE_LOG_CATEGORY(CSerialClass);
 
 
 void UDTSkeletalMeshComponent::InitializeComponent()
@@ -45,7 +47,9 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 		}
 	}
 	
-	
+	//初始化DT，并进行姿态校准
+    Init();
+
 	char buff[100];
 	
 	cSerialClass.ReadData(buff, 30);
@@ -61,6 +65,16 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 	//在物理模拟前，读取最新play状态，获取avatar最新状态，计算当前方位角差，并施加力，通知DT去都下一组数据，以让在下一tick时可直接获取到player数据
 
 	//在物理模拟结束后，计算当前avatar状态，并供下一tick开始时直接使用。
+}
+
+//初始化DT，并进行姿态校准
+void UDTSkeletalMeshComponent::Init(){
+    for(int i = 0; i < BoneNums; i++){
+        // 获取avatar bone姿态
+        AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], EBoneSpaces::WorldSpace);
+    }
+    
+
 }
 
 void UDTSkeletalMeshComponent::Test() {

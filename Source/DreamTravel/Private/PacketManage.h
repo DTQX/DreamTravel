@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SerialClass.h"
+DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
 /**
  * 
  */
