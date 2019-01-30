@@ -149,9 +149,7 @@ int CSerialClass::ReadData(void *buffer, int limit)
 	if (!ComStat.cbInQue) return(0);
 
 	dwBytesRead = (DWORD)ComStat.cbInQue;
-	if (limit < (int)dwBytesRead){
-        dwBytesRead = (DWORD)limit;
-    }
+	if (limit < (int)dwBytesRead) dwBytesRead = (DWORD)limit;
 	UE_LOG(LogTemp, Warning, TEXT("将要读取数据。。。time %f"), FPlatformTime::Seconds());
 	bReadStatus = ReadFile(m_hIDComDev, buffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
 	UE_LOG(LogTemp, Warning, TEXT("3将要读取数据。。。time %f"), FPlatformTime::Seconds());

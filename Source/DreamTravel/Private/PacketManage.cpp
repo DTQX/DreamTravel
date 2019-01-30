@@ -16,7 +16,7 @@ CPacketManage::~CPacketManage()
 
 }
 
-BOOL IsConnected(){
+BOOL CPacketManage::IsConnected(){
     return CSerialClass.IsOpened();
 }
 
@@ -33,4 +33,10 @@ BOOL CPacketManage::Connect(float DeltaTime){
         return result;
     }
     return false;
+}
+
+int CPacketManage::updatePlayerPose(FQuat * PlayerBonePoses, int BoneNums){
+    for(int i = 0; i < BoneNums; i++){
+        
+    }
 }

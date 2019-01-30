@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "PacketManage.h"
 #include "DTSkeletalMeshComponent.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
 
 #define BoneNums (20)
+
+class CPacketManage;
 
 /**
  * 
@@ -40,6 +41,8 @@ private:
 	//TMap<FString, >
 
 	//GetBoneAxis 获取骨骼的方向向量
+
+    
 	CPacketManage CPacketManage;
     //记录需要操作的骨骼名
 	FName BoneNames[BoneNums] = {

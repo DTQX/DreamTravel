@@ -20,6 +20,9 @@ public:
     //连接
     BOOL Connect(float DeltaTime);
 
+    //读取player最新姿态
+    int updatePlayerPose(FQuat * PlayerBonePoses, int BoneNums);
+
 private:
     CSerialClass CSerialClass;
 
