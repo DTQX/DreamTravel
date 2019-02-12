@@ -142,16 +142,17 @@ int CSerialClass::ReadData(void *buffer, int limit)
 	if (!m_bOpened || m_hIDComDev == NULL) return(0);
 
 	BOOL bReadStatus;
-	DWORD dwBytesRead, dwErrorFlags;
-	COMSTAT ComStat;
-	//获取com流中等待的自己数
-	ClearCommError(m_hIDComDev, &dwErrorFlags, &ComStat);
-	if (!ComStat.cbInQue) return(0);
+	DWORD dwBytesRead = (DWORD)limit;
+	// dwErrorFlags;
+	// COMSTAT ComStat;
+	// //获取com流中等待的字节数
+	// ClearCommError(m_hIDComDev, &dwErrorFlags, &ComStat);
+	// if (!ComStat.cbInQue) return(0);
 
-	dwBytesRead = (DWORD)ComStat.cbInQue;
-	if (limit < (int)dwBytesRead){
-        dwBytesRead = (DWORD)limit;
-    }
+	// dwBytesRead = (DWORD)ComStat.cbInQue;
+	// if (limit < (int)dwBytesRead){
+    //     dwBytesRead = (DWORD)limit;
+    // }
 	UE_LOG(LogTemp, Warning, TEXT("将要读取数据。。。time %f"), FPlatformTime::Seconds());
 	bReadStatus = ReadFile(m_hIDComDev, buffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
 	UE_LOG(LogTemp, Warning, TEXT("3将要读取数据。。。time %f"), FPlatformTime::Seconds());
@@ -167,4 +168,37 @@ int CSerialClass::ReadData(void *buffer, int limit)
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("连接失败，正在重连。。。"));
 	return((int)dwBytesRead);
+}
+
+int CSerialClass::ReadDataUtil(void *buffer, unsigned char end)
+{
+
+	if (!m_bOpened || m_hIDComDev == NULL) return(0);
+
+	BOOL bReadStatus;
+	DWORD dwBytesRead = (DWORD)limit;
+	UE_LOG(LogTemp, Warning, TEXT("将要读取数据。。。time %f"), FPlatformTime::Seconds());
+	bReadStatus = ReadFile(m_hIDComDev, buffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
+	UE_LOG(LogTemp, Warning, TEXT("3将要读取数据。。。time %f"), FPlatformTime::Seconds());
+	if (!bReadStatus){
+		if (GetLastError() == ERROR_IO_PENDING){
+			UE_LOG(LogTemp, Warning, TEXT("2将要读取数据。。。time %f"), FPlatformTime::Seconds());
+			WaitForSingleObject(m_OverlappedRead.hEvent, 2000);
+			UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), FPlatformTime::Seconds());
+//			UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), GetWorld()->GetTimeSeconds());
+			return((int)dwBytesRead);
+		}
+		return(0);
+	}
+	//UE_LOG(LogTemp, Warning, TEXT("连接失败，正在重连。。。"));
+	return((int)dwBytesRead);
+}
+
+int CSerialClass::GetReadySize(){
+	BOOL bReadStatus;
+	DWORD dwBytesRead, dwErrorFlags;
+	COMSTAT ComStat;
+	//获取com流中等待的字节数
+	ClearCommError(m_hIDComDev, &dwErrorFlags, &ComStat);
+	return ComStat.cbInQue;
 }

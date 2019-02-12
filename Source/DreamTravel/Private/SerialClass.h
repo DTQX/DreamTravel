@@ -36,6 +36,8 @@ public:
 
 	 int ReadData(void *, int);
 	 int SendData(const char *, int);
+
+	 int GetReadySize();
 	 
 
 	 BOOL IsOpened(void){ return(m_bOpened); }

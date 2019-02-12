@@ -29,4 +29,11 @@ private:
 
     float ConnectWaitedTime;      //  已等待的连接时间
     const float ExpectConnectWaitTime;     // 需要等待的连接时间
+
+    const int PacketSize =  26;     // 一个packet包字节数， mpu数 * 一个mpu数据大小 + 2 ； 3*8+2
+    const int PacketBuffSize = 1024;
+    unsigned char PacketBuff[PacketBuffSize];     // packet缓存区
+    unsigned char LastUncompletePacket[PacketSize];     // 上一次不完整的packet
+    const char END_CODE = 44;
+    const char START_CODE = 88;
 };
