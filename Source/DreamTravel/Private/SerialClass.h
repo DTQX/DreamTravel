@@ -37,7 +37,7 @@ public:
 	 BOOL Close(void);
 
 	 int ReadData(void *, int);
-     int ReadDataUtil(void *buffer, unsigned char end, int limit);
+     int ReadDataUtil(uint8 *buffer, uint8 end, int limit);
 	 int SendData(const char *, int);
 
 	 int GetReadySize();

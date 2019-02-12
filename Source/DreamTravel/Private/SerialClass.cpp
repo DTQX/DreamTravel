@@ -161,7 +161,7 @@ int CSerialClass::ReadData(void *buffer, int limit)
 }
 
 // 读取到某个字符，如果数据未准备则直接返回，或者超过limit时返回。(包括了指定字符)
-int CSerialClass::ReadDataUtil(void *buffer, unsigned char end, int limit)
+int CSerialClass::ReadDataUtil(uint8 *buffer, uint8 end, int limit)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(0);
@@ -169,9 +169,9 @@ int CSerialClass::ReadDataUtil(void *buffer, unsigned char end, int limit)
 	BOOL bReadStatus;
 	DWORD dwBytesRead = 1;
     int readBytesSize = 0;     // 已经读取数据的长度
-    char byteBuffer[1];
+	uint8 byteBuffer[1];
 
-    Bool isEnd = false;
+	BOOL isEnd = false;
     while(limit && !isEnd){
         bReadStatus = ReadFile(m_hIDComDev, byteBuffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
         if (bReadStatus) {

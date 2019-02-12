@@ -8,7 +8,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
 
-#define BoneNums (20)
+#define BONE_NUMS (20)
 
 class CPacketManage;
 
@@ -45,13 +45,13 @@ private:
     
 	CPacketManage CPacketManage;
     //记录需要操作的骨骼名
-	FName BoneNames[BoneNums] = {
+	FName BoneNames[BONE_NUMS] = {
         //FName("spine_01"),FName("spine_02"), FName("spine_03"), FName(""),FName(""),    //脊椎
         //FName("upperarm_l"),FName("lowerarm_l"),FName("hand_l"),FName("middle_01_l"),FName(""),FName(""),
 		FName("upperarm_l"),FName("lowerarm_l"),FName("hand_l")
 	};
-    FQuat AvatarBonePoses[BoneNums];
-    FQuat PlayerBonePoses[BoneNums];
+    FQuat AvatarBonePoses[BONE_NUMS];
+    FQuat PlayerBonePoses[BONE_NUMS];
 
     void Init();
 

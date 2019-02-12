@@ -70,7 +70,7 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 
 //初始化DT，并进行姿态校准
 void UDTSkeletalMeshComponent::Init(){
-    for(int i = 0; i < BoneNums; i++){
+    for(int i = 0; i < BONE_NUMS; i++){
         // 获取avatar bone姿态
         AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], EBoneSpaces::WorldSpace);
     }
