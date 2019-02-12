@@ -55,4 +55,8 @@ private:
 
     void Init();
 
+    // 数据包的起始字符与结束字符
+    const unsigned char START_CODE = 88;
+    const unsigned char END_CODE = 44;
+
 };

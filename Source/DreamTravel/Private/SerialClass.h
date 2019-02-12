@@ -17,6 +17,8 @@ DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
 #define ASCII_XON       0x11
 #define ASCII_XOFF      0x13
 
+
+
 //Ӧ�ð���MinWindows.h����Ȼ�ᱨ��
 #include "Windows/MinWindows.h"
 //#include "AllowWindowsPlatformTypes.h"
@@ -35,6 +37,7 @@ public:
 	 BOOL Close(void);
 
 	 int ReadData(void *, int);
+     int ReadDataUtil(void *buffer, unsigned char end, int limit);
 	 int SendData(const char *, int);
 
 	 int GetReadySize();
@@ -48,6 +51,8 @@ protected:
 	 HANDLE m_hIDComDev;
 	 OVERLAPPED m_OverlappedRead, m_OverlappedWrite;
 	 BOOL m_bOpened;
+
+
 };
 
 #endif

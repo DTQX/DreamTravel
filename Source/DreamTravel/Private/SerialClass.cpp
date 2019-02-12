@@ -136,6 +136,7 @@ int CSerialClass::SendData(const char *buffer, int size)
 	return((int)dwBytesWritten);
 }
 
+// 读取指定大小的数据
 int CSerialClass::ReadData(void *buffer, int limit)
 {
 
@@ -143,16 +144,6 @@ int CSerialClass::ReadData(void *buffer, int limit)
 
 	BOOL bReadStatus;
 	DWORD dwBytesRead = (DWORD)limit;
-	// dwErrorFlags;
-	// COMSTAT ComStat;
-	// //获取com流中等待的字节数
-	// ClearCommError(m_hIDComDev, &dwErrorFlags, &ComStat);
-	// if (!ComStat.cbInQue) return(0);
-
-	// dwBytesRead = (DWORD)ComStat.cbInQue;
-	// if (limit < (int)dwBytesRead){
-    //     dwBytesRead = (DWORD)limit;
-    // }
 	UE_LOG(LogTemp, Warning, TEXT("将要读取数据。。。time %f"), FPlatformTime::Seconds());
 	bReadStatus = ReadFile(m_hIDComDev, buffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
 	UE_LOG(LogTemp, Warning, TEXT("3将要读取数据。。。time %f"), FPlatformTime::Seconds());
@@ -161,37 +152,42 @@ int CSerialClass::ReadData(void *buffer, int limit)
 			UE_LOG(LogTemp, Warning, TEXT("2将要读取数据。。。time %f"), FPlatformTime::Seconds());
 			WaitForSingleObject(m_OverlappedRead.hEvent, 2000);
 			UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), FPlatformTime::Seconds());
-//			UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), GetWorld()->GetTimeSeconds());
+			//UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), GetWorld()->GetTimeSeconds());
 			return((int)dwBytesRead);
 		}
 		return(0);
 	}
-	//UE_LOG(LogTemp, Warning, TEXT("连接失败，正在重连。。。"));
 	return((int)dwBytesRead);
 }
 
-int CSerialClass::ReadDataUtil(void *buffer, unsigned char end)
+// 读取到某个字符，如果数据未准备则直接返回，或者超过limit时返回。(包括了指定字符)
+int CSerialClass::ReadDataUtil(void *buffer, unsigned char end, int limit)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(0);
 
 	BOOL bReadStatus;
-	DWORD dwBytesRead = (DWORD)limit;
-	UE_LOG(LogTemp, Warning, TEXT("将要读取数据。。。time %f"), FPlatformTime::Seconds());
-	bReadStatus = ReadFile(m_hIDComDev, buffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
-	UE_LOG(LogTemp, Warning, TEXT("3将要读取数据。。。time %f"), FPlatformTime::Seconds());
-	if (!bReadStatus){
-		if (GetLastError() == ERROR_IO_PENDING){
-			UE_LOG(LogTemp, Warning, TEXT("2将要读取数据。。。time %f"), FPlatformTime::Seconds());
-			WaitForSingleObject(m_OverlappedRead.hEvent, 2000);
-			UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), FPlatformTime::Seconds());
-//			UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), GetWorld()->GetTimeSeconds());
-			return((int)dwBytesRead);
-		}
-		return(0);
-	}
-	//UE_LOG(LogTemp, Warning, TEXT("连接失败，正在重连。。。"));
-	return((int)dwBytesRead);
+	DWORD dwBytesRead = 1;
+    int readBytesSize = 0;     // 已经读取数据的长度
+    char byteBuffer[1];
+
+    Bool isEnd = false;
+    while(limit && !isEnd){
+        bReadStatus = ReadFile(m_hIDComDev, byteBuffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
+        if (bReadStatus) {
+            buffer[readBytesSize] = byteBuffer[0];
+            readBytesSize ++ ;
+            limit --;
+            if(byteBuffer[0] == end){
+                UE_LOG(LogTemp, Warning, TEXT("数据读取完成"));
+                isEnd = true;
+            }
+        }else{
+            UE_LOG(LogTemp, Warning, TEXT("为读取到指定字符"));
+            isEnd = true;
+        }
+    }
+    return readBytesSize;
 }
 
 int CSerialClass::GetReadySize(){
