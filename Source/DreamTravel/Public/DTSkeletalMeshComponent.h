@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "PacketManage.h"
 #include "DTSkeletalMeshComponent.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
+//DECLARE_LOG_CATEGORY_EXTERN(UDTSkeletalMeshComponent, Log, All);
 
 #define BONE_NUMS (20)
-
-class CPacketManage;
 
 /**
  * 

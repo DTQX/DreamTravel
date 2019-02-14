@@ -2,12 +2,12 @@
 
 #include "PacketManage.h"
 
-DEFINE_LOG_CATEGORY(CPacketManage);
+//DEFINE_LOG_CATEGORY(CPacketManage);
 
 CPacketManage::CPacketManage()
 {
-    CSerialClass = CSerialClass();
-    ConnectWaitedTime = 0.0f;
+    //CSerialClass = CSerialClass();
+    //ConnectWaitedTime = 0.0f;
 }
 
 CPacketManage::~CPacketManage()
