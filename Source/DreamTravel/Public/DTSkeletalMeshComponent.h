@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "PacketManage.h"
+#include "MyClass.h"
 #include "DTSkeletalMeshComponent.generated.h"
 
 //DECLARE_LOG_CATEGORY_EXTERN(UDTSkeletalMeshComponent, Log, All);
@@ -43,6 +44,7 @@ private:
 
     
 	CPacketManage CPacketManage;
+	MyClass MyClass;
     //记录需要操作的骨骼名
 	FName BoneNames[BONE_NUMS] = {
         //FName("spine_01"),FName("spine_02"), FName("spine_03"), FName(""),FName(""),    //脊椎

@@ -16,7 +16,8 @@ void UDTSkeletalMeshComponent::InitializeComponent()
 void UDTSkeletalMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	//CPacketManage = CPacketManage(1);
+	//CPacketManage = CPacketManage();
+	//MyClass = MyClass();
 	// CPacketManage.Initialise();
 
 
