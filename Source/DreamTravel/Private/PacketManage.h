@@ -32,8 +32,8 @@ public:
 private:
     int ReadLastPacket();   // 读取数据包
     int Packet2Quat(FQuat * PlayerBonePoses, int BoneNums);  // 数据包转换成Quat
-    uint8 dmpGetQuaternion(int16 *data, const uint8* packet);
-	uint8 dmpGetQuaternion(FQuat q, const uint8* packet);
+    uint8 dmpGetQuaternion(int16 *data, const uint8* packet);   //packet 转int16
+	uint8 dmpGetQuaternion(FQuat q, const uint8* packet);   //  packet 转 quat
 
     CSerialClass CSerialClass;
 
