@@ -2,7 +2,7 @@
 
 #include "SerialClass.h"
 
-DEFINE_LOG_CATEGORY(CSerialClass);
+//DEFINE_LOG_CATEGORY(CSerialClass);
 
 CSerialClass::CSerialClass()
 {

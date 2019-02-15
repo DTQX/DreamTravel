@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
+//DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
 
 #ifndef __SERIAL_H__
 #define __SERIAL_H__

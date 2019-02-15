@@ -2,7 +2,7 @@
 
 #include "SerialClass.h"
 
-DEFINE_LOG_CATEGORY(CSerialClass);
+//DEFINE_LOG_CATEGORY(CSerialClass);
 
 CSerialClass::CSerialClass()
 {
@@ -191,8 +191,7 @@ int CSerialClass::ReadDataUtil(uint8 *buffer, uint8 end, int limit)
 }
 
 int CSerialClass::GetReadySize(){
-	BOOL bReadStatus;
-	DWORD dwBytesRead, dwErrorFlags;
+	DWORD dwErrorFlags;
 	COMSTAT ComStat;
 	//获取com流中等待的字节数
 	ClearCommError(m_hIDComDev, &dwErrorFlags, &ComStat);

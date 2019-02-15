@@ -2,12 +2,12 @@
 
 #include "PacketManage.h"
 
-DEFINE_LOG_CATEGORY(CPacketManage);
+//DEFINE_LOG_CATEGORY(CPacketManage);
 
 CPacketManage::CPacketManage()
 {
-    CSerialClass = CSerialClass();
-    ConnectWaitedTime = 0.0f;
+    //CSerialClass = CSerialClass();
+    //ConnectWaitedTime = 0.0f;
 }
 
 CPacketManage::~CPacketManage()
@@ -70,6 +70,8 @@ int CPacketManage::UpdatePlayerPose(FQuat * PlayerBonePoses, int BoneNums){
     //     }
         
     // }
+
+	return 0;
     
 }
 
@@ -114,6 +116,8 @@ int CPacketManage::Packet2Quat(FQuat * PlayerBonePoses, int BoneNums){
 		memcpy(UnitPacket, PacketBuff + i * UNIT_PACKET_SIZE * sizeof(uint8), UNIT_PACKET_SIZE * sizeof(uint8));
 		dmpGetQuaternion(PlayerBonePoses[i], UnitPacket);
     }
+
+	return 0;
 }
 
 uint8 CPacketManage::dmpGetQuaternion(int16 *data, const uint8* packet) {

@@ -1,11 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DTSkeletalMeshComponent.h"
-#include "PacketManage.h"
-
 // #include "SerialPort.h" 
 
-DEFINE_LOG_CATEGORY(CSerialClass);
+//DEFINE_LOG_CATEGORY(UDTSkeletalMeshComponent);
 
 
 void UDTSkeletalMeshComponent::InitializeComponent()
@@ -18,7 +16,8 @@ void UDTSkeletalMeshComponent::InitializeComponent()
 void UDTSkeletalMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	CPacketManage = CPacketManage();
+	//CPacketManage = CPacketManage();
+	//MyClass = MyClass();
 	// CPacketManage.Initialise();
 
 
@@ -53,8 +52,8 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 
 	// char buff[100];
 	
-	// cSerialClass.ReadData(buff, 30);
-	// FPlatformProcess::Sleep(1);
+	//cSerialClass.ReadData(buff, 30);
+	FPlatformProcess::Sleep(1);
 	
 	// FString a = buff;
 	// UE_LOG(LogTemp, Warning, TEXT("%s"), *a);
@@ -92,16 +91,16 @@ int UDTSkeletalMeshComponent::UpdateAvatarPose(FQuat * AvatarBonePoses, int Bone
 
 void UDTSkeletalMeshComponent::Test() {
 	
-	while (cSerialClass.Open(4, 115200) == false) {
-		FPlatformProcess::Sleep(1);
-		UE_LOG(LogTemp, Warning, TEXT("连接失败，正在重连。。。"));
-	}
+	//while (cSerialClass.Open(4, 115200) == false) {
+	//	FPlatformProcess::Sleep(1);
+	//	UE_LOG(LogTemp, Warning, TEXT("连接失败，正在重连。。。"));
+	//}
 	UE_LOG(LogTemp, Warning, TEXT("连接成功"));
 
 	char buff[100];
 	//while (true)
 	//{
-		cSerialClass.ReadData(buff, 30);
+		//cSerialClass.ReadData(buff, 30);
 		UE_LOG(LogTemp, Warning, TEXT("%s"), buff);
 		FPlatformProcess::Sleep(0.1);
 	//}
