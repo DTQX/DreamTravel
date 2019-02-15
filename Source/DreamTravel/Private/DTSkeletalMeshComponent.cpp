@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DTSkeletalMeshComponent.h"
+#include "PacketManage.h"
+
 // #include "SerialPort.h" 
 
 //DEFINE_LOG_CATEGORY(UDTSkeletalMeshComponent);
@@ -16,14 +18,14 @@ void UDTSkeletalMeshComponent::InitializeComponent()
 void UDTSkeletalMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	//CPacketManage = CPacketManage();
+	PacketManage = new FPacketManage();
 	//MyClass = MyClass();
-	// CPacketManage.Initialise();
+	// PacketManage->Initialise();
 
 
 	//连接DreamTravel，不断尝试连接，不连接成功，不进行下一步，或者直接退出
-	//CSerialClass::Initialise();
-	//while (CSerialClass::Open(3, 115200) == false)
+	//FSerialClass::Initialise();
+	//while (FSerialClass::Open(3, 115200) == false)
 	//{
 	//	FPlatformProcess::Sleep(1000);
 	//	UE_LOG(LogTemp, Warning, TEXT("连接失败，正在重连。。。"));
@@ -41,8 +43,8 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     //连接
-	if (CPacketManage.IsConnected() == false) {
-		if (CPacketManage.Connect(DeltaTime) == false) {
+	if (PacketManage->IsConnected() == false) {
+		if (PacketManage->Connect(DeltaTime) == false) {
 			return;
 		}
 	}
@@ -76,17 +78,19 @@ void UDTSkeletalMeshComponent::Init(){
 
 }
 
-int UDTSkeletalMeshComponent::UpdatePose(){
+void UDTSkeletalMeshComponent::UpdatePose(){
 
     UpdateAvatarPose(AvatarBonePoses, BONE_NUMS);
-    CPacketManage.UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
+    PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
+
 }
 
-int UDTSkeletalMeshComponent::UpdateAvatarPose(FQuat * AvatarBonePoses, int BoneNums){
+void UDTSkeletalMeshComponent::UpdateAvatarPose(FQuat * AvatarBonePoses, int BoneNums){
     for(int i = 0; i < BONE_NUMS; i++){
         // 获取avatar bone姿态
         AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], EBoneSpaces::WorldSpace);
     }
+
 }
 
 void UDTSkeletalMeshComponent::Test() {

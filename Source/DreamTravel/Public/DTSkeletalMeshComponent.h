@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "PacketManage.h"
 #include "MyClass.h"
 #include "DTSkeletalMeshComponent.generated.h"
 
 //DECLARE_LOG_CATEGORY_EXTERN(UDTSkeletalMeshComponent, Log, All);
 
 #define BONE_NUMS (20)
+
+class FPacketManage;
 
 /**
  * 
@@ -28,8 +29,8 @@ public:
 	virtual void BeginDestroy() override;
 private:
 
-    int UpdatePose();  // 更新姿态
-    int UpdateAvatarPose(FQuat * PlayerBonePoses, int BoneNums);    // 更新avatar姿态
+	void UpdatePose();  // 更新姿态
+	void UpdateAvatarPose(FQuat * PlayerBonePoses, int BoneNums);    // 更新avatar姿态
 
 	// BoneNames = spine_01, spine_02, spine_03
 	// 	左手 :左手 upperarm_l, lowerarm_l, hand_l,
@@ -46,7 +47,7 @@ private:
 	//GetBoneAxis 获取骨骼的方向向量
 
     
-	CPacketManage CPacketManage;
+	FPacketManage* PacketManage;
 	MyClass MyClass;
     //记录需要操作的骨骼名
 	FName BoneNames[BONE_NUMS] = {

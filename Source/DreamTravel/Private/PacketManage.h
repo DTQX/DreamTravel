@@ -2,36 +2,40 @@
 // 管理连接
 #pragma once
 
-#include "SerialClass.h"
+//#include "SerialClass.h"
 #include "CoreMinimal.h"
 
 
-//DECLARE_LOG_CATEGORY_EXTERN(CPacketManage, Log, All);
+//DECLARE_LOG_CATEGORY_EXTERN(FPacketManage, Log, All);
 
 #define PACKET_SIZE  (26)     // 一个packet包字节数， mpu数 * 一个mpu数据大小 + 2 ； 3*8+2
 #define PACKET_BUFF_SIZE (1024)
 #define UNIT_PACKET_SIZE (8)
 
+class FSerialClass;
 /**
  * 
  */
-class DREAMTRAVEL_API CPacketManage
+class DREAMTRAVEL_API FPacketManage
 {
 public:
-	CPacketManage();
-	~CPacketManage();
+	FPacketManage();
+	~FPacketManage();
 
     //是否已连接
-    BOOL IsConnected();
+    bool IsConnected();
 
     //连接
-    BOOL Connect(float DeltaTime);
+    bool Connect(float DeltaTime);
 
     //读取player最新姿态
     int UpdatePlayerPose(FQuat * PlayerBonePoses, int BoneNums);
 
 private:
-	CSerialClass CSerialClass;
+
+	FSerialClass * SerialClass = nullptr;
+
+	//FSerialClass * fSerialClass = nullptr;
 
     int ReadLastPacket();   // 读取数据包
     int Packet2Quat(FQuat * PlayerBonePoses, int BoneNums);  // 数据包转换成Quat

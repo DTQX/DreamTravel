@@ -2,27 +2,27 @@
 
 #include "SerialClass.h"
 
-//DEFINE_LOG_CATEGORY(CSerialClass);
+//DEFINE_LOG_CATEGORY(FSerialClass);
 
-CSerialClass::CSerialClass()
+FSerialClass::FSerialClass()
 {
     m_hIDComDev = NULL;
 	m_bOpened = FALSE;
 }
 
-CSerialClass::~CSerialClass()
+FSerialClass::~FSerialClass()
 {
     Close();
 	UE_LOG(LogTemp, Warning, TEXT("Serial closed !"));
 }
 
-void CSerialClass::Initialise()
+void FSerialClass::Initialise()
 {
 
 }
 
 //打开串口
-BOOL CSerialClass::Open(int nPort, int nBaud)
+BOOL FSerialClass::Open(int nPort, int nBaud)
 {
 	if (m_bOpened) return(TRUE);
 
@@ -82,7 +82,7 @@ BOOL CSerialClass::Open(int nPort, int nBaud)
 }
 
 //关闭串口
-BOOL CSerialClass::Close(void)
+BOOL FSerialClass::Close(void)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(TRUE);
@@ -97,7 +97,7 @@ BOOL CSerialClass::Close(void)
 }
 
 //写串口字节
-BOOL CSerialClass::WriteCommByte(unsigned char ucByte)
+BOOL FSerialClass::WriteCommByte(unsigned char ucByte)
 {
 	BOOL bWriteStat;
 	DWORD dwBytesWritten;
@@ -121,7 +121,7 @@ BOOL CSerialClass::WriteCommByte(unsigned char ucByte)
 	return(TRUE);
 }
 
-int CSerialClass::SendData(const char *buffer, int size)
+int FSerialClass::SendData(const char *buffer, int size)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(0);
@@ -137,7 +137,7 @@ int CSerialClass::SendData(const char *buffer, int size)
 }
 
 // 读取指定大小的数据
-int CSerialClass::ReadData(void *buffer, int limit)
+int FSerialClass::ReadData(void *buffer, int limit)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(0);
@@ -161,7 +161,7 @@ int CSerialClass::ReadData(void *buffer, int limit)
 }
 
 // 读取到某个字符，如果数据未准备则直接返回，或者超过limit时返回。(包括了指定字符)
-int CSerialClass::ReadDataUtil(uint8 *buffer, uint8 end, int limit)
+int FSerialClass::ReadDataUtil(uint8 *buffer, uint8 end, int limit)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(0);
@@ -190,7 +190,7 @@ int CSerialClass::ReadDataUtil(uint8 *buffer, uint8 end, int limit)
     return readBytesSize;
 }
 
-int CSerialClass::GetReadySize(){
+int FSerialClass::GetReadySize(){
 	DWORD dwErrorFlags;
 	COMSTAT ComStat;
 	//获取com流中等待的字节数

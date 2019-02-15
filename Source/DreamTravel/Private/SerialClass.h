@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//DECLARE_LOG_CATEGORY_EXTERN(CSerialClass, Log, All);
+//DECLARE_LOG_CATEGORY_EXTERN(FSerialClass, Log, All);
 
 #ifndef __SERIAL_H__
 #define __SERIAL_H__
@@ -26,11 +26,11 @@
 /**
  * 
  */
-class CSerialClass
+class FSerialClass
 {
 public:
-	CSerialClass();
-	~CSerialClass();
+	FSerialClass();
+	~FSerialClass();
 
 	 void Initialise();
 	 BOOL Open(int nPort = 2, int nBaud = 9600);
