@@ -50,13 +50,13 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 	//初始化DT，并进行姿态校准
     Init();
 
-	char buff[100];
+	// char buff[100];
 	
 	//cSerialClass.ReadData(buff, 30);
 	FPlatformProcess::Sleep(1);
 	
-	FString a = buff;
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *a);
+	// FString a = buff;
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *a);
 
 	//float BoneMass = GetBoneMass(FName("spine_01"), false);
 	//UE_LOG(LogTemp, Warning, TEXT("BoneMass:  %f"), BoneMass);
@@ -69,12 +69,24 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 
 //初始化DT，并进行姿态校准
 void UDTSkeletalMeshComponent::Init(){
+    // 更新姿态
+    UpdatePose();
+    
+    
+
+}
+
+int UDTSkeletalMeshComponent::UpdatePose(){
+
+    UpdateAvatarPose(AvatarBonePoses, BONE_NUMS);
+    CPacketManage.UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
+}
+
+int UDTSkeletalMeshComponent::UpdateAvatarPose(FQuat * AvatarBonePoses, int BoneNums){
     for(int i = 0; i < BONE_NUMS; i++){
         // 获取avatar bone姿态
         AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], EBoneSpaces::WorldSpace);
     }
-    
-
 }
 
 void UDTSkeletalMeshComponent::Test() {

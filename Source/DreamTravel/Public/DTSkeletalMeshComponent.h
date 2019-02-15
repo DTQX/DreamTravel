@@ -28,6 +28,9 @@ public:
 	virtual void BeginDestroy() override;
 private:
 
+    int UpdatePose();  // 更新姿态
+    int UpdateAvatarPose(FQuat * PlayerBonePoses, int BoneNums);    // 更新avatar姿态
+
 	// BoneNames = spine_01, spine_02, spine_03
 	// 	左手 :左手 upperarm_l, lowerarm_l, hand_l,
 	// 		手掌，middle_01_l
