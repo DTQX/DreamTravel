@@ -1,8 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 #pragma once
 
 #include "CoreMinimal.h"
-//DECLARE_LOG_CATEGORY_EXTERN(FSerialClass, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(SerialClass, Log, All);
 
 #ifndef __SERIAL_H__
 #define __SERIAL_H__
@@ -37,7 +37,7 @@ public:
 	 BOOL Close(void);
 
 	 int ReadData(void *, int);
-     int ReadDataUtil(uint8 *buffer, uint8 end, int limit);
+     int ReadDataUtil(uint8 *buffer, uint8 end1, uint8 end2, int limit);
 	 int SendData(const char *, int);
 
 	 int GetReadySize();

@@ -1,15 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "MyClass.h"
 #include "DTSkeletalMeshComponent.generated.h"
 
-//DECLARE_LOG_CATEGORY_EXTERN(UDTSkeletalMeshComponent, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(DTSkeletalMeshComponent, Log, All);
 
-#define BONE_NUMS (20)
+// 骨头（mpu）节点数量
+#define BONE_NUMS (3)
 
 class FPacketManage;
 
@@ -48,20 +48,19 @@ private:
 
     
 	FPacketManage* PacketManage;
-	MyClass MyClass;
-    //记录需要操作的骨骼名
+
+	// 记录需要操作的骨骼名
 	FName BoneNames[BONE_NUMS] = {
-        //FName("spine_01"),FName("spine_02"), FName("spine_03"), FName(""),FName(""),    //脊椎
-        //FName("upperarm_l"),FName("lowerarm_l"),FName("hand_l"),FName("middle_01_l"),FName(""),FName(""),
+		//FName("spine_01"),FName("spine_02"), FName("spine_03"), FName(""),FName(""),    //脊椎
+		//FName("upperarm_l"),FName("lowerarm_l"),FName("hand_l"),FName("middle_01_l"),FName(""),FName(""),
 		FName("upperarm_l"),FName("lowerarm_l"),FName("hand_l")
 	};
-    FQuat AvatarBonePoses[BONE_NUMS];
-    FQuat PlayerBonePoses[BONE_NUMS];
+
+    FQuat AvatarBonePoses[BONE_NUMS];	//
+	FQuat PlayerBonePoses[BONE_NUMS];
+
 
     void Init();
 
-    // 数据包的起始字符与结束字符
-    const unsigned char START_CODE = 88;
-    const unsigned char END_CODE = 44;
-
+	void InitPlayerBonePoses();		// 初始化PlayerBonePoses
 };

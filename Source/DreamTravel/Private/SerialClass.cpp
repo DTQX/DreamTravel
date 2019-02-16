@@ -1,8 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SerialClass.h"
 
-//DEFINE_LOG_CATEGORY(FSerialClass);
+DEFINE_LOG_CATEGORY(SerialClass);
 
 FSerialClass::FSerialClass()
 {
@@ -13,7 +13,7 @@ FSerialClass::FSerialClass()
 FSerialClass::~FSerialClass()
 {
     Close();
-	UE_LOG(LogTemp, Warning, TEXT("Serial closed !"));
+	UE_LOG(SerialClass, Warning, TEXT("Serial closed !"));
 }
 
 void FSerialClass::Initialise()
@@ -144,24 +144,25 @@ int FSerialClass::ReadData(void *buffer, int limit)
 
 	BOOL bReadStatus;
 	DWORD dwBytesRead = (DWORD)limit;
-	UE_LOG(LogTemp, Warning, TEXT("将要读取数据。。。time %f"), FPlatformTime::Seconds());
 	bReadStatus = ReadFile(m_hIDComDev, buffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
-	UE_LOG(LogTemp, Warning, TEXT("3将要读取数据。。。time %f"), FPlatformTime::Seconds());
 	if (!bReadStatus){
 		if (GetLastError() == ERROR_IO_PENDING){
-			UE_LOG(LogTemp, Warning, TEXT("2将要读取数据。。。time %f"), FPlatformTime::Seconds());
 			WaitForSingleObject(m_OverlappedRead.hEvent, 2000);
-			UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), FPlatformTime::Seconds());
-			//UE_LOG(LogTemp, Warning, TEXT("已读取数据。。。time %f"), GetWorld()->GetTimeSeconds());
+			UE_LOG(SerialClass, Warning, TEXT("ReadData::数据读取完成，有等待"));
+			//UE_LOG(SerialClass, Warning, TEXT("已读取数据。。。time %f"), FPlatformTime::Seconds());
+			//UE_LOG(SerialClass, Warning, TEXT("已读取数据。。。time %f"), GetWorld()->GetTimeSeconds());
 			return((int)dwBytesRead);
 		}
 		return(0);
 	}
+	UE_LOG(SerialClass, Warning, TEXT("ReadData::数据读取完成"));
+
+
 	return((int)dwBytesRead);
 }
 
 // 读取到某个字符，如果数据未准备则直接返回，或者超过limit时返回。(包括了指定字符)
-int FSerialClass::ReadDataUtil(uint8 *buffer, uint8 end, int limit)
+int FSerialClass::ReadDataUtil(uint8 *buffer, uint8 end1, uint8 end2, int limit)
 {
 
 	if (!m_bOpened || m_hIDComDev == NULL) return(0);
@@ -169,22 +170,32 @@ int FSerialClass::ReadDataUtil(uint8 *buffer, uint8 end, int limit)
 	BOOL bReadStatus;
 	DWORD dwBytesRead = 1;
     int readBytesSize = 0;     // 已经读取数据的长度
-	uint8 byteBuffer[1];
+	uint8* byteBuffer;
 
-	BOOL isEnd = false;
-    while(limit && !isEnd){
+	BOOL bEnd1Equalled = false;
+
+    while(limit){
         bReadStatus = ReadFile(m_hIDComDev, byteBuffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
         if (bReadStatus) {
-            buffer[readBytesSize] = byteBuffer[0];
+            buffer[readBytesSize] = *byteBuffer;
             readBytesSize ++ ;
             limit --;
-            if(byteBuffer[0] == end){
-                UE_LOG(LogTemp, Warning, TEXT("数据读取完成"));
-                isEnd = true;
-            }
+            if(!bEnd1Equalled){
+				if (*byteBuffer == end1){
+					bEnd1Equalled = true;
+					UE_LOG(SerialClass, Warning, TEXT("ReadDataUtil:: end1 equal!"));
+				}
+			}else{
+				if (*byteBuffer == end2) {
+					UE_LOG(SerialClass, Warning, TEXT("ReadDataUtil:: end2 equal! 数据读取完成"));
+					return readBytesSize;
+				}else {
+					bEnd1Equalled = false;
+				}
+			}
         }else{
-            UE_LOG(LogTemp, Warning, TEXT("为读取到指定字符"));
-            isEnd = true;
+            UE_LOG(SerialClass, Warning, TEXT("未读取到指定字符"));
+			return readBytesSize;
         }
     }
     return readBytesSize;

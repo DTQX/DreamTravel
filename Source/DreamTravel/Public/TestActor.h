@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,8 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "TestActor.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(TestActor, Log, All);
+
+#define BONE_NUMS (3)		// mpu节点数
 
 class FPacketManage;
+class UStaticMeshComponent;
 
 UCLASS()
 class DREAMTRAVEL_API ATestActor : public AActor
@@ -21,6 +25,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void BeginDestroy() override;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,4 +35,13 @@ protected:
 private:
 
 	FPacketManage* PacketManage = nullptr;
+	//UStaticMeshComponent* cube;
+	TArray<UStaticMeshComponent*> cubes;
+
+	//FQuat * PlayerBonePoses[BONE_NUMS];
+	TArray<FQuat> * PlayerBonePoses;
+
+	void InitPlayerBonePoses(int BoneNums);		// 初始化PlayerBonePoses
+
+
 };
