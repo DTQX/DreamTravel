@@ -10,6 +10,7 @@ DECLARE_LOG_CATEGORY_EXTERN(PacketManage, Log, All);
 
 // 数据相关
 #define PACKET_SIZE  (26)     // 一个packet包字节数， mpu数 * 一个mpu数据大小 + 2 ； 3*8+2
+#define PURE_PACKET_SIZE (PACKET_SIZE - 2)	// 一个packet包的内容字节数
 #define PACKET_BUFF_SIZE (1024)		// 数据缓存区大小
 #define UNIT_PACKET_SIZE (8)		// 一个mpu的数据大小
 
@@ -40,6 +41,7 @@ private:
 	//FSerialClass * fSerialClass = nullptr;
 
     int ReadLastPacket();   // 读取数据包
+    int ReadLastPacket_back();   // 读取数据包,旧版
     //int Packet2Quat(FQuat * PlayerBonePoses[], int BoneNums);  // 数据包转换成Quat
     int Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums);  // 数据包转换成Quat
     uint8 dmpGetQuaternionL(int16 *data, const uint8* packet);   //packet 转int16
@@ -54,8 +56,8 @@ private:
 	uint8 UnitPacket[UNIT_PACKET_SIZE] = {0};		// 一个mpu的数据
 	uint8 PacketBuff[PACKET_BUFF_SIZE] = {0};     // packet缓存区
 	uint8 LastIncompletePacket[PACKET_SIZE] = {0};     // 上一次不完整的packet
-	const uint8 START_CODE_2 = 44;	// 数据包开始标志符
-	const uint8 START_CODE_1 = 88;	// 数据包结束标志符
+	const uint8 START_CODE_2 = 44;	// 数据包开始标志符2
+	const uint8 START_CODE_1 = 88;	// 数据包开始标志符1
 	bool IsLastReadPacketComplete = true;	// 记录上一次的读取到的数据包是否完整
 
 	// 数据读取相关

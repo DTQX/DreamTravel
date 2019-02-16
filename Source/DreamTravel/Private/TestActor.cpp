@@ -48,10 +48,11 @@ void ATestActor::Tick(float DeltaTime)
 	PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
 	for (int i = 0; i < BONE_NUMS; i++)
 	{
-		UE_LOG(TestActor, Warning, TEXT("%s"), *((*PlayerBonePoses)[i]).ToString());
+		//UE_LOG(TestActor, Warning, TEXT("%s"), *((*PlayerBonePoses)[i]).ToString());
 		//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i]);
 	}
-	
+	UE_LOG(TestActor, Warning, TEXT("%s"), *((*PlayerBonePoses)[0]).ToString());
+
 	cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
 
 }
