@@ -49,6 +49,7 @@ int FPacketManage::UpdatePlayerPose(TArray<FQuat>* PlayerBonePoses, int BoneNums
     
     // 读取数据
     int ReadStatus = ReadLastPacket();
+    //int ReadStatus = ReadLastPacket_back();
     if(ReadStatus != 1){
         return -1;
     }
@@ -93,6 +94,7 @@ int FPacketManage::ReadLastPacket_back() {
 		SerialClass->ReadDataUtil(PacketBuff, START_CODE_1, START_CODE_2, ReadyBytesSize);
 		ReadyBytesSize = SerialClass->GetReadySize();
 	}
+	//FPlatformProcess::Sleep(0.001);
 
 	// 如果剩下数据少于需要的数据（即剩下的数据不足PURE_PACKET_SIZE），则返回
 	if (ReadyBytesSize < PURE_PACKET_SIZE) {
@@ -103,14 +105,15 @@ int FPacketManage::ReadLastPacket_back() {
 	IsLastReadPacketComplete = true;
 
 	if (ReadyBytesSize > PACKET_SIZE + PURE_PACKET_SIZE){
-		if (ReadyBytesSize % PACKET_SIZE < PURE_PACKET_SIZE){
-			BytesNeeded = ReadyBytesSize % PACKET_SIZE + PACKET_SIZE;
+		if (ReadyBytesSize % PACKET_SIZE < PURE_PACKET_SIZE) {
+			PacketBytesNeeded = ReadyBytesSize % PACKET_SIZE + PACKET_SIZE;
 		}
 		else {
-			BytesNeeded = PURE_PACKET_SIZE;
+			PacketBytesNeeded = PURE_PACKET_SIZE;
 		}
+		//PacketBytesNeeded = ReadyBytesSize % PACKET_SIZE + PACKET_SIZE;
 
-		BytesNotNeed = ReadyBytesSize - BytesNeeded;		// 不需要的数据大小
+		BytesNotNeed = ReadyBytesSize - PacketBytesNeeded;		// 不需要的数据大小
 		//只需要后面一个完整的数据包，前面多余的数据清除，这里不用ReadDataUtil是为了优化性能
 		while (BytesNotNeed > 0) {
 			// 如果数据过多，超出缓存区，则考虑是开始时多余的数据，读取到最后一个buff。（只可能在最开始时发生，这些数据不做处理，直接清空）
@@ -150,16 +153,16 @@ int FPacketManage::ReadLastPacket(){
 	}
     
 	// 需要读取的数据大小，eg： 24 E S 24 E，则需要 24 E； 24 E S 24 ，则需要 24 E S 24
-    BytesNeeded = ReadyBytesSize % PACKET_SIZE + PACKET_SIZE;     
+    PacketBytesNeeded = ReadyBytesSize % PACKET_SIZE + PACKET_SIZE;     
     // 如果剩下数据少于需要的数据（即剩下的数据不足一个数据包的大小），则返回
-    if(ReadyBytesSize < BytesNeeded){
-        UE_LOG(PacketManage, Warning, TEXT("数据不够一个数据包！ReadyBytesSize : %d, BytesNeeded : %d"), ReadyBytesSize, BytesNeeded);
+    if(ReadyBytesSize < PacketBytesNeeded){
+        UE_LOG(PacketManage, Warning, TEXT("数据不够一个数据包！ReadyBytesSize : %d, PacketBytesNeeded : %d"), ReadyBytesSize, PacketBytesNeeded);
 		IsLastReadPacketComplete = false;
         return -1;
     }
 	IsLastReadPacketComplete = true;
 
-    BytesNotNeed = ReadyBytesSize - BytesNeeded;       // 不需要的数据大小
+    BytesNotNeed = ReadyBytesSize - PacketBytesNeeded;       // 不需要的数据大小
     //只需要后面一个完整的数据包，前面多余的数据清除，这里不用ReadDataUtil是为了优化性能
     while(BytesNotNeed > 0) {
         // 如果数据过多，超出缓存区，则考虑是开始时多余的数据，读取到最后一个buff。（只可能在最开始时发生，这些数据不做处理，直接清空）
@@ -189,7 +192,7 @@ int FPacketManage::Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums){
 		memcpy(UnitPacket, PacketBuff + i * UNIT_PACKET_SIZE * sizeof(uint8), UNIT_PACKET_SIZE * sizeof(uint8));
 		dmpGetQuaternion(&((*PlayerBonePoses)[i]), UnitPacket);
 		//PlayerBonePoses[i].X = i;
-		UE_LOG(PacketManage, Warning, TEXT("数据包转FQuat %s"), *((*PlayerBonePoses)[i].ToString()));
+		//UE_LOG(PacketManage, Warning, TEXT("数据包转FQuat %s"), *((*PlayerBonePoses)[i].ToString()));
 
 
     }
@@ -211,10 +214,18 @@ uint8 FPacketManage::dmpGetQuaternion(FQuat* q, const uint8* packet) {
     int16 qI[4];
     uint8 status = dmpGetQuaternionL(qI, packet);
     if (status == 0) {
-        q->W = (float)qI[0] / 16384.0f;
-        q->X = (float)qI[1] / 16384.0f;
-        q->Y = (float)qI[2] / 16384.0f;
-        q->Z = (float)qI[3] / 16384.0f;
+		q->W = (float)qI[0] / 16384.0f;
+
+		// 右手转左手 x,y不对调
+		q->X = -(float)qI[1] / 16384.0f;
+		q->Y = (float)qI[2] / 16384.0f;
+		q->Z = -(float)qI[3] / 16384.0f;
+
+		// 右手转左手 x,y对调
+		/*q->X = (float)qI[2] / 16384.0f;
+		q->Y = (float)qI[1] / 16384.0f;
+		q->Z = - (float)qI[3] / 16384.0f;*/
+
         return 0;
     }
     return status; // int16 return value, indicates error if this line is reached

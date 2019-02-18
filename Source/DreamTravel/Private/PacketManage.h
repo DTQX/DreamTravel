@@ -10,7 +10,7 @@ DECLARE_LOG_CATEGORY_EXTERN(PacketManage, Log, All);
 
 // 数据相关
 #define PACKET_SIZE  (26)     // 一个packet包字节数， mpu数 * 一个mpu数据大小 + 2 ； 3*8+2
-#define PURE_PACKET_SIZE (PACKET_SIZE - 2)	// 一个packet包的内容字节数
+#define PURE_PACKET_SIZE (24)	// 一个packet包的内容字节数
 #define PACKET_BUFF_SIZE (1024)		// 数据缓存区大小
 #define UNIT_PACKET_SIZE (8)		// 一个mpu的数据大小
 
@@ -62,7 +62,7 @@ private:
 
 	// 数据读取相关
 	int ReadyBytesSize;
-	int BytesNeeded;
+	int PacketBytesNeeded;
 	int BytesNotNeed;
 	int readPacketSize;
 

@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
+//#include "GameFramework/Actor.h"
 #include "TestActor.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(TestActor, Log, All);
@@ -12,9 +13,10 @@ DECLARE_LOG_CATEGORY_EXTERN(TestActor, Log, All);
 
 class FPacketManage;
 class UStaticMeshComponent;
+//class UInputComponent;
 
 UCLASS()
-class DREAMTRAVEL_API ATestActor : public AActor
+class DREAMTRAVEL_API ATestActor : public APawn
 {
 	GENERATED_BODY()
 	
@@ -26,6 +28,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void BeginDestroy() override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 
 protected:
@@ -41,7 +46,14 @@ private:
 	//FQuat * PlayerBonePoses[BONE_NUMS];
 	TArray<FQuat> * PlayerBonePoses;
 
+	TArray<FQuat> * PlayerBonePosesInverse;		// 初始化转换Quat
+
+	bool PoseSynced = false;
+
+	// 输入绑定
+	//UInputComponent* InputComponent;
+
 	void InitPlayerBonePoses(int BoneNums);		// 初始化PlayerBonePoses
 
-
+	void SyncPoses();
 };

@@ -3,6 +3,7 @@
 #include "TestActor.h"
 #include "PacketManage.h"
 #include "Components/StaticMeshComponent.h"
+#
 
 DEFINE_LOG_CATEGORY(TestActor);
 
@@ -13,6 +14,7 @@ ATestActor::ATestActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// InputComponent = CreateDefaultSubobject<UInputComponent>(FName("Input Component"));
 }
 
 // Called when the game starts or when spawned
@@ -33,6 +35,8 @@ void ATestActor::BeginPlay()
 
 		UE_LOG(TestActor, Warning, TEXT("%s"), *(a->GetName()));
 	}
+
+	// InputComponent->BindAction("Jump", IE_Released, this, &ATestActor::SyncPoses);
 }
 
 // Called every frame
@@ -51,28 +55,60 @@ void ATestActor::Tick(float DeltaTime)
 		//UE_LOG(TestActor, Warning, TEXT("%s"), *((*PlayerBonePoses)[i]).ToString());
 		//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i]);
 	}
-	UE_LOG(TestActor, Warning, TEXT("%s"), *((*PlayerBonePoses)[0]).ToString());
+	UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
+	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesInverse %s"), *((*PlayerBonePosesInverse)[0]).ToString());
+	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesInverse %s"), *((*PlayerBonePosesInverse)[0] * (*PlayerBonePoses)[0]).ToString());
 
-	cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
+	//cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
+	//if (PoseSynced){
+		//SetActorRotation( (*PlayerBonePosesInverse)[0] * (*PlayerBonePoses)[0] * FQuat(FRotator(45, 0, 0)));
+		SetActorRotation(FQuat(FRotator(0, 45, 0)) * (*PlayerBonePosesInverse)[0] * (*PlayerBonePoses)[0] );
+		//SetActorRotation(FQuat(FRotator(45,45,45)));
+	//}
+	
 
+
+
+}
+
+void ATestActor::SyncPoses() {
+	UE_LOG(TestActor, Warning, TEXT("SyncPoses!"));
+
+	for (int i = 0; i < BONE_NUMS; i++)
+	{
+		(*PlayerBonePosesInverse)[0] = (*PlayerBonePoses)[0].Inverse();
+	}
+
+	PoseSynced = true;
 }
 
 void ATestActor::InitPlayerBonePoses(int BoneNums)
 {
-	//TArray<FQuat> a;
-	//TArray<FQuat> a;
 	PlayerBonePoses = new TArray<FQuat>;
 	for (int i = 0; i < BoneNums; i++)
 	{
-		//*PlayerBonePoses[i] = FQuat(0, 0, 0, 0);
 		PlayerBonePoses->Push(FQuat(0, 0, 0, 0));
 	}
+
+	// 初始化转换Quat
+	PlayerBonePosesInverse = new TArray<FQuat>;
+	for (int i = 0; i < BoneNums; i++)
+	{
+		PlayerBonePosesInverse->Push(FQuat(0, 0, 0, 0));
+	}
 }
+
+void ATestActor::SetupPlayerInputComponent(UInputComponent* InputComponent)
+{
+	Super::SetupPlayerInputComponent(InputComponent);
+
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ATestActor::SyncPoses);
+}
+
 
 void ATestActor::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	//cSerialClass.Close();
 	delete PacketManage;
 }
