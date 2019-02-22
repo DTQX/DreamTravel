@@ -47,8 +47,6 @@ private:
 	//GetBoneAxis 获取骨骼的方向向量
 
     
-	FPacketManage* PacketManage;
-
 	// 记录需要操作的骨骼名
 	FName BoneNames[BONE_NUMS] = {
 		//FName("spine_01"),FName("spine_02"), FName("spine_03"), FName(""),FName(""),    //脊椎
@@ -56,11 +54,25 @@ private:
 		FName("upperarm_l"),FName("lowerarm_l"),FName("hand_l")
 	};
 
-    FQuat AvatarBonePoses[BONE_NUMS];	//
-	FQuat PlayerBonePoses[BONE_NUMS];
 
 
     void Init();
 
 	void InitPlayerBonePoses();		// 初始化PlayerBonePoses
+
+
+    FPacketManage* PacketManage = nullptr;
+
+	TArray<FQuat> * PlayerBonePoses;
+
+	TArray<FQuat> * PlayerBonePosesInverse;		// 用于姿态初始化的Quat，值为playerBone的初始姿态的逆
+
+	bool PoseSynced = false;
+
+	// 输入绑定
+	//UInputComponent* InputComponent;
+
+	void InitPlayerBonePoses(int BoneNums);		// 初始化PlayerBonePoses
+
+	void SyncPoses();
 };
