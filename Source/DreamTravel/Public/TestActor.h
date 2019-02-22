@@ -46,7 +46,7 @@ private:
 	//FQuat * PlayerBonePoses[BONE_NUMS];
 	TArray<FQuat> * PlayerBonePoses;
 
-	TArray<FQuat> * PlayerBonePosesInverse;		// 初始化转换Quat
+	TArray<FQuat> * PlayerBonePosesTransformation;		// 初始化转换Quat
 
 	bool PoseSynced = false;
 

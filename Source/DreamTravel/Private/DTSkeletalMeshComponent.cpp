@@ -19,6 +19,11 @@ void UDTSkeletalMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	PacketManage = new FPacketManage();
+
+    // 初始化PlayerBonePoses
+	InitPoses(BONE_NUMS);
+
+
 	//MyClass = MyClass();
 	// PacketManage->Initialise();
 
@@ -42,13 +47,15 @@ void UDTSkeletalMeshComponent::BeginPlay()
 void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-    //连接
-	//if (PacketManage->IsConnected() == false) {
-	//	if (PacketManage->Connect(DeltaTime) == false) {
-	//		return;
-	//	}
-	//}
-	//
+
+    // 连接
+	if (PacketManage->Connect(DeltaTime) == false) {
+		return;
+	}
+
+    // 更新玩家姿态（玩家即用户）
+	PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
+
 	////初始化DT，并进行姿态校准
  //   Init();
 
@@ -93,6 +100,58 @@ void UDTSkeletalMeshComponent::UpdateAvatarPose(FQuat * AvatarBonePoses, int Bon
 
 }
 
+
+void UDTSkeletalMeshComponent::SyncPoses(float DeltaTime) {
+    bool IsSame = false;
+    for(int i = 0; i< BONE_NUMS; i++){
+        // TODO 查看
+        if((*PlayerBonePosesSync)[0] == )
+    }
+    if()
+    StaticStayTime += DeltaTime;
+    if(StaticStayTime >= StaticNeeded){
+        for (int i = 0; i < BONE_NUMS; i++){
+            (*PlayerBonePosesTransformation)[0] = (*PlayerBonePoses)[0].Inverse();
+        }
+        UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("SyncPoses success!"));
+    }
+
+
+	
+
+	PoseSynced = true;
+}
+
+void UDTSkeletalMeshComponent::InitPoses(int BoneNums)
+{
+	PlayerBonePoses = new TArray<FQuat>;
+	PlayerBonePosesTransformation = new TArray<FQuat>;
+	PlayerBonePosesSync = new TArray<FQuat>;
+
+	for (int i = 0; i < BoneNums; i++)
+	{
+        // 初始化玩家pose
+		PlayerBonePoses->Push(FQuat(0, 0, 0, 0));
+
+	    // 初始化转换Quat
+		PlayerBonePosesTransformation->Push(FQuat(0, 0, 0, 0));
+
+        // 初始化同步pose
+		PlayerBonePosesSync->Push(FQuat(0, 0, 0, 0));
+	}
+}
+
+void UDTSkeletalMeshComponent::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	delete PacketManage;
+}
+
+
+
+
+
 void UDTSkeletalMeshComponent::Test() {
 	
 	//while (cSerialClass.Open(4, 115200) == false) {
@@ -134,24 +193,3 @@ void UDTSkeletalMeshComponent::Test() {
 	return;
 
 }
-
-void UDTSkeletalMeshComponent::InitPlayerBonePoses()
-{
-	for (int i = 0; i < BONE_NUMS; i++)
-	{
-		PlayerBonePoses[i] = FQuat(0, 0, 0, 0);
-	}
-}
-
-void UDTSkeletalMeshComponent::BeginDestroy()
-{
-	Super::BeginDestroy();
-
-	//cSerialClass.Close();
-	delete PacketManage;
-}
-
-
-
-
-

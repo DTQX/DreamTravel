@@ -58,21 +58,21 @@ private:
 
     void Init();
 
-	void InitPlayerBonePoses();		// 初始化PlayerBonePoses
 
 
-    FPacketManage* PacketManage = nullptr;
+    FPacketManage* PacketManage = nullptr;      // 数据包管理中心
 
-	TArray<FQuat> * PlayerBonePoses;
+	TArray<FQuat> * PlayerBonePoses;        // 存放用户最新的用户姿态
 
-	TArray<FQuat> * PlayerBonePosesInverse;		// 用于姿态初始化的Quat，值为playerBone的初始姿态的逆
+	TArray<FQuat> * PlayerBonePosesTransformation;		// 用于姿态初始化的Quat，值为playerBone的初始姿态的逆
 
-	bool PoseSynced = false;
 
-	// 输入绑定
-	//UInputComponent* InputComponent;
+	void InitPoses(int BoneNums);		// 初始化PlayerBonePoses和PlayerBonePosesTransformation
 
-	void InitPlayerBonePoses(int BoneNums);		// 初始化PlayerBonePoses
+	bool PoseSynced = false;        // 是否已同步
+    float StaticStayTime = 0;     // 用户静止的时长
+    const float StaticNeeded = 3.0;       // 用户需要静止的时长
+	TArray<FQuat> * PlayerBonePosesSync;        // 存放用户最新的用户姿态
 
-	void SyncPoses();
+	void SyncPoses(float DeltaTime);       // 同步player、avatar
 };

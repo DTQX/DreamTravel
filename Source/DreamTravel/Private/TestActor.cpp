@@ -56,13 +56,13 @@ void ATestActor::Tick(float DeltaTime)
 		//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i]);
 	}
 	UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
-	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesInverse %s"), *((*PlayerBonePosesInverse)[0]).ToString());
-	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesInverse %s"), *((*PlayerBonePosesInverse)[0] * (*PlayerBonePoses)[0]).ToString());
+	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
+	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
 
 	//cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
 	//if (PoseSynced){
-		//SetActorRotation( (*PlayerBonePosesInverse)[0] * (*PlayerBonePoses)[0] * FQuat(FRotator(45, 0, 0)));
-		SetActorRotation(FQuat(FRotator(0, 45, 0)) * (*PlayerBonePosesInverse)[0] * (*PlayerBonePoses)[0] );
+		//SetActorRotation( (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * FQuat(FRotator(45, 0, 0)));
+		SetActorRotation(FQuat(FRotator(0, 45, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
 		//SetActorRotation(FQuat(FRotator(45,45,45)));
 	//}
 	
@@ -76,7 +76,7 @@ void ATestActor::SyncPoses() {
 
 	for (int i = 0; i < BONE_NUMS; i++)
 	{
-		(*PlayerBonePosesInverse)[0] = (*PlayerBonePoses)[0].Inverse();
+		(*PlayerBonePosesTransformation)[0] = (*PlayerBonePoses)[0].Inverse();
 	}
 
 	PoseSynced = true;
@@ -91,10 +91,10 @@ void ATestActor::InitPlayerBonePoses(int BoneNums)
 	}
 
 	// 初始化转换Quat
-	PlayerBonePosesInverse = new TArray<FQuat>;
+	PlayerBonePosesTransformation = new TArray<FQuat>;
 	for (int i = 0; i < BoneNums; i++)
 	{
-		PlayerBonePosesInverse->Push(FQuat(0, 0, 0, 0));
+		PlayerBonePosesTransformation->Push(FQuat(0, 0, 0, 0));
 	}
 }
 
