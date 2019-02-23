@@ -55,6 +55,8 @@ void ATestActor::Tick(float DeltaTime)
 		//UE_LOG(TestActor, Warning, TEXT("%s"), *((*PlayerBonePoses)[i]).ToString());
 		//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i]);
 	}
+    //UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
+
 	UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
 	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
 	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());

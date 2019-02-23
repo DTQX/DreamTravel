@@ -54,7 +54,7 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 	}
 
     // 更新玩家姿态（玩家即用户）
-	PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
+	//PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
 
 	////初始化DT，并进行姿态校准
  //   Init();
@@ -87,7 +87,7 @@ void UDTSkeletalMeshComponent::Init(){
 
 void UDTSkeletalMeshComponent::UpdatePose(){
 
-    UpdateAvatarPose(AvatarBonePoses, BONE_NUMS);
+    //UpdateAvatarPose(AvatarBonePoses, BONE_NUMS);
     //PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
 
 }
@@ -95,26 +95,38 @@ void UDTSkeletalMeshComponent::UpdatePose(){
 void UDTSkeletalMeshComponent::UpdateAvatarPose(FQuat * AvatarBonePoses, int BoneNums){
     for(int i = 0; i < BONE_NUMS; i++){
         // 获取avatar bone姿态
-        AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], EBoneSpaces::WorldSpace);
+        //AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], EBoneSpaces::WorldSpace);
     }
 
 }
 
 
 void UDTSkeletalMeshComponent::SyncPoses(float DeltaTime) {
-    bool IsSame = false;
-    for(int i = 0; i< BONE_NUMS; i++){
-        // TODO 查看
-        if((*PlayerBonePosesSync)[0] == )
-    }
-    if()
-    StaticStayTime += DeltaTime;
-    if(StaticStayTime >= StaticNeeded){
-        for (int i = 0; i < BONE_NUMS; i++){
-            (*PlayerBonePosesTransformation)[0] = (*PlayerBonePoses)[0].Inverse();
-        }
-        UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("SyncPoses success!"));
-    }
+
+
+  //  bool IsSame = false;
+  //  for(int i = 0; i< BONE_NUMS; i++){
+  //      //UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("quat size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
+  //      
+		//// 用上次记录的静止的pose的模减去最新的pose的模，如果小于DeltaSize则认为用户静止，（因为mpu有误差，所以不用直接判断相等）
+		//// 如果所有节点都小于，则相等
+		//float LastPoseSize = (*PlayerBonePoses)[i].Size();
+		//if(PlayerBonePosesSyncSize[i] - LastPoseSize <= DeltaSize){
+		//	IsSame = true;
+		//}else{
+		//	// 如果有一个不小于，则认为不相等， 则重新等待静止，并将不同的pose的模进行更新
+		//	StaticStayTime = 0.0;
+		//	PlayerBonePosesSyncSize[i] = LastPoseSize;
+		//}
+  //  }
+  //  
+  //  StaticStayTime += DeltaTime;
+  //  if(StaticStayTime >= StaticNeeded){
+  //      for (int i = 0; i < BONE_NUMS; i++){
+  //          (*PlayerBonePosesTransformation)[0] = (*PlayerBonePoses)[0].Inverse();
+  //      }
+  //      UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("SyncPoses success!"));
+  //  }
 
 
 	
@@ -126,7 +138,6 @@ void UDTSkeletalMeshComponent::InitPoses(int BoneNums)
 {
 	PlayerBonePoses = new TArray<FQuat>;
 	PlayerBonePosesTransformation = new TArray<FQuat>;
-	PlayerBonePosesSync = new TArray<FQuat>;
 
 	for (int i = 0; i < BoneNums; i++)
 	{
@@ -135,9 +146,6 @@ void UDTSkeletalMeshComponent::InitPoses(int BoneNums)
 
 	    // 初始化转换Quat
 		PlayerBonePosesTransformation->Push(FQuat(0, 0, 0, 0));
-
-        // 初始化同步pose
-		PlayerBonePosesSync->Push(FQuat(0, 0, 0, 0));
 	}
 }
 

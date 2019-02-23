@@ -72,7 +72,8 @@ private:
 	bool PoseSynced = false;        // 是否已同步
     float StaticStayTime = 0;     // 用户静止的时长
     const float StaticNeeded = 3.0;       // 用户需要静止的时长
-	TArray<FQuat> * PlayerBonePosesSync;        // 存放用户最新的用户姿态
+	const float DeltaSize = 1.0;	// 最初的静止pose与最新的pose的模差如果小于DeltaSize，则说明玩家是静止的。
+	float PlayerBonePosesSyncSize[BONE_NUMS] = {0.0};        // 存放玩家上次静止的pose的模
 
 	void SyncPoses(float DeltaTime);       // 同步player、avatar
 };
