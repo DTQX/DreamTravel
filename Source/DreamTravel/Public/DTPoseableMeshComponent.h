@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "DTSkeletalMeshComponent.generated.h"
+#include "Components/PoseableMeshComponent.h"
+#include "GameFramework/Pawn.h"
+#include "DTPoseableMeshComponent.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(DTSkeletalMeshComponent, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(DTPoseableMeshComponent, Log, All);
 
 // 骨头（mpu）节点数量
 #define BONE_NUMS (3)
@@ -17,12 +18,11 @@ class FPacketManage;
  * 
  */
 UCLASS(ClassGroup = ("DreamTravel"), meta = (BlueprintSpawnableComponent))
-class DREAMTRAVEL_API UDTSkeletalMeshComponent : public USkeletalMeshComponent
+class DREAMTRAVEL_API UDTPoseableMeshComponent : public APawn
 {
 	GENERATED_BODY()
 	
 public:
-	virtual void InitializeComponent() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 	virtual void BeginPlay() override;
 	void Test();
@@ -30,7 +30,7 @@ public:
 private:
 
 	void UpdatePose();  // 更新姿态
-	void UpdateAvatarPose(FQuat * PlayerBonePoses, int BoneNums);    // 更新avatar姿态
+	void UpdateAvatarPoseNonPhysics();    // 更新avatar姿态
 
 	// BoneNames = spine_01, spine_02, spine_03
 	// 	左手 :左手 upperarm_l, lowerarm_l, hand_l,
@@ -66,14 +66,18 @@ private:
 
 	TArray<FQuat> * PlayerBonePosesTransformation;		// 用于姿态初始化的Quat，值为playerBone的初始姿态的逆
 
+	TArray<FRotator> * InitialAvatarBonePoses;		// 保存初始的Avatar姿态
 
 	void InitPoses(int BoneNums);		// 初始化PlayerBonePoses和PlayerBonePosesTransformation
 
+	// 同步相关
 	bool PoseSynced = false;        // 是否已同步
-    float StaticStayTime = 0;     // 用户静止的时长
-    const float StaticNeeded = 3.0;       // 用户需要静止的时长
-	const float DeltaSize = 1.0;	// 最初的静止pose与最新的pose的模差如果小于DeltaSize，则说明玩家是静止的。
-	float PlayerBonePosesSyncSize[BONE_NUMS] = {0.0};        // 存放玩家上次静止的pose的模
+	const int SameNeededTimes = 3;		// 用户需要静止的校验次数，每IntervalTime校验一次
+	int SameTimes = 0;		// 校验已经相同的次数
+    float StayedTime = 0;     // 距上一次校验的时长
+    const float IntervalTime = 1.0;       // 两次校验间的时间间隔
+	const float DeltaSize = 2.0;	// 最初的静止pose与最新的pose的欧拉角的模差如果小于DeltaSize，则说明玩家是静止的。
+	TArray<FVector> * PlayerBonePosesSync;        // 存放玩家上次静止的pose的欧拉角
 
 	void SyncPoses(float DeltaTime);       // 同步player、avatar
 };

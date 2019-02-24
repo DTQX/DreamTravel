@@ -48,98 +48,19 @@ int FPacketManage::UpdatePlayerPose(TArray<FQuat>* PlayerBonePoses, int BoneNums
     }
     
     // 读取数据
-    int ReadStatus = ReadLastPacket();
     //int ReadStatus = ReadLastPacket_back();
-    if(ReadStatus != 1){
+    if(ReadLastPacket() != 1){
         return -1;
     }
 
     // 处理数据
     Packet2Quat(PlayerBonePoses, BoneNums);
 
-
-
-
-    // // 如果剩下的bytes数大于PACKET_SIZE则读取，否则不读取
-    // if(ReadyBytesSize > PACKET_SIZE){
-    //     int ReadBytes = SerialClass->ReadData(PacketBuff, ReadyBytesSize);
-        
-    //     if(ReadBytes != ReadyBytesSize){
-    //         UE_LOG(PacketManage, Warning, TEXT("数据读取失败！"));
-    //         return 0;
-    //     }
-
-    //     int LastEndCodeIndex = 0;
-    //     for(int i = ReadyBytesSize-1; i >= 0 ; i--)
-    //     {
-    //         if (PacketBuff[i] == START_CODE_2) {
-    //             LastEndCodeIndex = i;
-    //         }
-            
-    //     }
-        
-    // }
-
 	return 1;
     
 }
 
-int FPacketManage::ReadLastPacket_back() {
-	ReadyBytesSize = SerialClass->GetReadySize();
 
-	// 将数据流定向到数据包开始，不包括START_CODE_1, START_CODE_2
-	if (IsLastReadPacketComplete) {
-		// 如果上一次读取的数据包是完整的，那么上一次的数据就已经被读取了，我们这次可以重定位到START_CODE_1；
-		// 否则，上一次的数据没被读取，我们要接着上一次的读，不能抛弃这些未读取的数据。
-		SerialClass->ReadDataUtil(PacketBuff, START_CODE_1, START_CODE_2, ReadyBytesSize);
-		ReadyBytesSize = SerialClass->GetReadySize();
-	}
-	//FPlatformProcess::Sleep(0.001);
-
-	// 如果剩下数据少于需要的数据（即剩下的数据不足PURE_PACKET_SIZE），则返回
-	if (ReadyBytesSize < PURE_PACKET_SIZE) {
-		UE_LOG(PacketManage, Warning, TEXT("数据不够一个数据包！ReadyBytesSize : %d, PURE_PACKET_SIZE : %d"), ReadyBytesSize, PURE_PACKET_SIZE);
-		IsLastReadPacketComplete = false;
-		return -1;
-	}
-	IsLastReadPacketComplete = true;
-
-	if (ReadyBytesSize > PACKET_SIZE + PURE_PACKET_SIZE){
-		if (ReadyBytesSize % PACKET_SIZE < PURE_PACKET_SIZE) {
-			PacketBytesNeeded = ReadyBytesSize % PACKET_SIZE + PACKET_SIZE;
-		}
-		else {
-			PacketBytesNeeded = PURE_PACKET_SIZE;
-		}
-		//PacketBytesNeeded = ReadyBytesSize % PACKET_SIZE + PACKET_SIZE;
-
-		BytesNotNeed = ReadyBytesSize - PacketBytesNeeded;		// 不需要的数据大小
-		//只需要后面一个完整的数据包，前面多余的数据清除，这里不用ReadDataUtil是为了优化性能
-		while (BytesNotNeed > 0) {
-			// 如果数据过多，超出缓存区，则考虑是开始时多余的数据，读取到最后一个buff。（只可能在最开始时发生，这些数据不做处理，直接清空）
-			if (BytesNotNeed > PACKET_BUFF_SIZE) {
-				BytesNotNeed -= SerialClass->ReadData(PacketBuff, PACKET_BUFF_SIZE);
-			}
-			else {
-				// 清除不需要的数据
-				BytesNotNeed -= SerialClass->ReadData(PacketBuff, BytesNotNeed);
-			}
-		}
-	}
-
-	
-
-	// 开始读取数据
-	readPacketSize = SerialClass->ReadData(PacketBuff, PURE_PACKET_SIZE);
-	// 如果读取的数据大小不等于期望的数据包大小，则数据出错，丢弃读取到的数据，不进行任何处理， 返回-1
-	if (readPacketSize != PURE_PACKET_SIZE) {
-		UE_LOG(PacketManage, Warning, TEXT("数据包出错！ readPacketSize: %d , PacketSize-2 : %d"), readPacketSize, PURE_PACKET_SIZE);
-
-		return -1;
-	}
-
-	return 1;
-}
 
 int FPacketManage::ReadLastPacket(){
     ReadyBytesSize =  SerialClass->GetReadySize();
@@ -229,4 +150,62 @@ uint8 FPacketManage::dmpGetQuaternion(FQuat* q, const uint8* packet) {
         return 0;
     }
     return status; // int16 return value, indicates error if this line is reached
+}
+
+
+int FPacketManage::ReadLastPacket_back() {
+	ReadyBytesSize = SerialClass->GetReadySize();
+
+	// 将数据流定向到数据包开始，不包括START_CODE_1, START_CODE_2
+	if (IsLastReadPacketComplete) {
+		// 如果上一次读取的数据包是完整的，那么上一次的数据就已经被读取了，我们这次可以重定位到START_CODE_1；
+		// 否则，上一次的数据没被读取，我们要接着上一次的读，不能抛弃这些未读取的数据。
+		SerialClass->ReadDataUtil(PacketBuff, START_CODE_1, START_CODE_2, ReadyBytesSize);
+		ReadyBytesSize = SerialClass->GetReadySize();
+	}
+	//FPlatformProcess::Sleep(0.001);
+
+	// 如果剩下数据少于需要的数据（即剩下的数据不足PURE_PACKET_SIZE），则返回
+	if (ReadyBytesSize < PURE_PACKET_SIZE) {
+		UE_LOG(PacketManage, Warning, TEXT("数据不够一个数据包！ReadyBytesSize : %d, PURE_PACKET_SIZE : %d"), ReadyBytesSize, PURE_PACKET_SIZE);
+		IsLastReadPacketComplete = false;
+		return -1;
+	}
+	IsLastReadPacketComplete = true;
+
+	if (ReadyBytesSize > PACKET_SIZE + PURE_PACKET_SIZE) {
+		if (ReadyBytesSize % PACKET_SIZE < PURE_PACKET_SIZE) {
+			PacketBytesNeeded = ReadyBytesSize % PACKET_SIZE + PACKET_SIZE;
+		}
+		else {
+			PacketBytesNeeded = PURE_PACKET_SIZE;
+		}
+		//PacketBytesNeeded = ReadyBytesSize % PACKET_SIZE + PACKET_SIZE;
+
+		BytesNotNeed = ReadyBytesSize - PacketBytesNeeded;		// 不需要的数据大小
+		//只需要后面一个完整的数据包，前面多余的数据清除，这里不用ReadDataUtil是为了优化性能
+		while (BytesNotNeed > 0) {
+			// 如果数据过多，超出缓存区，则考虑是开始时多余的数据，读取到最后一个buff。（只可能在最开始时发生，这些数据不做处理，直接清空）
+			if (BytesNotNeed > PACKET_BUFF_SIZE) {
+				BytesNotNeed -= SerialClass->ReadData(PacketBuff, PACKET_BUFF_SIZE);
+			}
+			else {
+				// 清除不需要的数据
+				BytesNotNeed -= SerialClass->ReadData(PacketBuff, BytesNotNeed);
+			}
+		}
+	}
+
+
+
+	// 开始读取数据
+	readPacketSize = SerialClass->ReadData(PacketBuff, PURE_PACKET_SIZE);
+	// 如果读取的数据大小不等于期望的数据包大小，则数据出错，丢弃读取到的数据，不进行任何处理， 返回-1
+	if (readPacketSize != PURE_PACKET_SIZE) {
+		UE_LOG(PacketManage, Warning, TEXT("数据包出错！ readPacketSize: %d , PacketSize-2 : %d"), readPacketSize, PURE_PACKET_SIZE);
+
+		return -1;
+	}
+
+	return 1;
 }

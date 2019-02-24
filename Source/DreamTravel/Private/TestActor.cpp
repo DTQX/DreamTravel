@@ -39,37 +39,41 @@ void ATestActor::BeginPlay()
 	// InputComponent->BindAction("Jump", IE_Released, this, &ATestActor::SyncPoses);
 }
 
+
 // Called every frame
 void ATestActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// 如果是测试则注释return，不然这里使用PacketManage->Connect()会与其他地方冲突（端口只能保持一个连接）
+	return;
 
 	// 连接
 	if (PacketManage->Connect(DeltaTime) == false) {
 		return;
 	}
 
-	PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
-	for (int i = 0; i < BONE_NUMS; i++)
-	{
-		//UE_LOG(TestActor, Warning, TEXT("%s"), *((*PlayerBonePoses)[i]).ToString());
-		//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i]);
-	}
-    //UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
+	UE_LOG(TestActor, Warning, TEXT("ATestActor TickComponent"));
 
-	UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
-	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
-	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
 
-	//cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
-	//if (PoseSynced){
-		//SetActorRotation( (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * FQuat(FRotator(45, 0, 0)));
-		SetActorRotation(FQuat(FRotator(0, 45, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
-		//SetActorRotation(FQuat(FRotator(45,45,45)));
+	//PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
+	//for (int i = 0; i < BONE_NUMS; i++)
+	//{
+	//	//UE_LOG(TestActor, Warning, TEXT("%s"), *((*PlayerBonePoses)[i]).ToString());
+	//	//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i]);
 	//}
-	
+ //   UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
 
+	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
+	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
+	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
 
+	////cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
+	////if (PoseSynced){
+	//	//SetActorRotation( (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * FQuat(FRotator(45, 0, 0)));
+	//	SetActorRotation(FQuat(FRotator(0, 45, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
+	//	//SetActorRotation(FQuat(FRotator(45,45,45)));
+	////}
 
 }
 
