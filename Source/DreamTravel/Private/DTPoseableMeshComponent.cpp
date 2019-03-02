@@ -15,11 +15,8 @@ void UDTPoseableMeshComponent::BeginPlay()
 	PacketManage = new FPacketManage();
 
     // 初始化PlayerBonePoses
-	//InitPoses(BONE_NUMS);
+	InitPoses(BONE_NUMS);
 
-
-	//MyClass = MyClass();
-	// PacketManage->Initialise();
 
 
 	//连接DreamTravel，不断尝试连接，不连接成功，不进行下一步，或者直接退出
@@ -42,6 +39,7 @@ void UDTPoseableMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	return;
 	 //UE_LOG(DTPoseableMeshComponent, Warning, TEXT("UDTPoseableMeshComponent TickComponent"));
 
 	if (PacketManage == nullptr)

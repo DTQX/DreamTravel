@@ -8,8 +8,6 @@ DEFINE_LOG_CATEGORY(PacketManage);
 
 FPacketManage::FPacketManage()
 {
-    //FSerialClass = SerialClass();
-    //ConnectWaitedTime = 0.0f;
 	SerialClass =  new FSerialClass();
 }
 

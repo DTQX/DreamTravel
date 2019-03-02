@@ -3,30 +3,43 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/PoseableMeshComponent.h"
-#include "DTPoseableMeshComponent.generated.h"
+#include "GameFramework/Pawn.h"
+#include "DTPawn.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(DTPoseableMeshComponent, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(DTPawn, Log, All);
 
 // 骨头（mpu）节点数量
 #define BONE_NUMS (3)
 
 class FPacketManage;
+class UPoseableMeshComponent;
 
-/**
- * 
- */
-UCLASS(ClassGroup = ("DreamTravel"), meta = (BlueprintSpawnableComponent))
-class DREAMTRAVEL_API UDTPoseableMeshComponent : public UPoseableMeshComponent
+UCLASS()
+class DREAMTRAVEL_API ADTPawn : public APawn
 {
 	GENERATED_BODY()
-	
+
 public:
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+	// Sets default values for this pawn's properties
+	ADTPawn();
+
+protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	void Test();
 	virtual void BeginDestroy() override;
+
 private:
+
+	UPoseableMeshComponent* PoseableMeshComponent = nullptr;
 
 	void UpdatePose();  // 更新姿态
 	void UpdateAvatarPoseNonPhysics();    // 更新avatar姿态
@@ -45,7 +58,7 @@ private:
 
 	//GetBoneAxis 获取骨骼的方向向量
 
-    
+
 	// 记录需要操作的骨骼名
 	FName BoneNames[BONE_NUMS] = {
 		//FName("spine_01"),FName("spine_02"), FName("spine_03"), FName(""),FName(""),    //脊椎
@@ -55,11 +68,11 @@ private:
 
 
 
-    void Init();
+	void Init();
 
 
 
-    FPacketManage* PacketManage = nullptr;      // 数据包管理中心
+	FPacketManage* PacketManage = nullptr;      // 数据包管理中心
 
 	TArray<FQuat> * PlayerBonePoses;        // 存放用户最新的用户姿态
 
@@ -71,12 +84,13 @@ private:
 
 	// 同步相关
 	bool PoseSynced = false;        // 是否已同步
-	const int SameNeededTimes = 3;		// 用户需要静止的校验次数，每IntervalTime校验一次
+	const int SameNeededTimes = 2;		// 用户需要静止的校验次数，每IntervalTime校验一次
 	int SameTimes = 0;		// 校验已经相同的次数
-    float StayedTime = 0;     // 距上一次校验的时长
-    const float IntervalTime = 1.0;       // 两次校验间的时间间隔
-	const float DeltaSize = 2.0;	// 最初的静止pose与最新的pose的欧拉角的模差如果小于DeltaSize，则说明玩家是静止的。
+	float StayedTime = 0;     // 距上一次校验的时长
+	const float IntervalTime = 1.0;       // 两次校验间的时间间隔
+	const float DeltaSize = 10.0;	// 最初的静止pose与最新的pose的欧拉角的模差如果小于DeltaSize，则说明玩家是静止的。
 	TArray<FVector> * PlayerBonePosesSync;        // 存放玩家上次静止的pose的欧拉角
 
 	void SyncPoses(float DeltaTime);       // 同步player、avatar
+	
 };
