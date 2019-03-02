@@ -46,7 +46,7 @@ void ATestActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 如果是测试则注释return，不然这里使用PacketManage->Connect()会与其他地方冲突（端口只能保持一个连接）
-	//return;
+	return;
 
 	// 连接
 	if (PacketManage->Connect(DeltaTime) == false) {

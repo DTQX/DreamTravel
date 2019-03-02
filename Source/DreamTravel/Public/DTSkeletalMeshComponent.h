@@ -3,21 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/PoseableMeshComponent.h"
-#include "DTPoseableMeshComponent.generated.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "DTSkeletalMeshComponent.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(DTPoseableMeshComponent, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(DTSkeletalMeshComponent, Log, All);
 
 // 骨头（mpu）节点数量
 #define BONE_NUMS (3)
 
 class FPacketManage;
 
+class UPoseableMeshComponent;
+
 /**
  * 
  */
 UCLASS(ClassGroup = ("DreamTravel"), meta = (BlueprintSpawnableComponent))
-class DREAMTRAVEL_API UDTPoseableMeshComponent : public UPoseableMeshComponent
+class DREAMTRAVEL_API UDTSkeletalMeshComponent : public USkeletalMeshComponent
 {
 	GENERATED_BODY()
 	
@@ -27,6 +29,7 @@ public:
 	void Test();
 	virtual void BeginDestroy() override;
 private:
+
 
 	void UpdatePose();  // 更新姿态
 	void UpdateAvatarPoseNonPhysics();    // 更新avatar姿态
@@ -79,4 +82,6 @@ private:
 	TArray<FVector> * PlayerBonePosesSync;        // 存放玩家上次静止的pose的欧拉角
 
 	void SyncPoses(float DeltaTime);       // 同步player、avatar
+
+
 };
