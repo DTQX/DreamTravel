@@ -28,8 +28,6 @@ public:
 	TArray<FTransform> BoneSpaceTransforms;
 
 	FBoneContainer RequiredBones;
-private:
-
 
 	UFUNCTION(BlueprintCallable, Category = "Components|PoseableMesh")
 		void SetBoneTransformByName(FName BoneName, const FTransform& InTransform, EBoneSpaces::Type BoneSpace);

@@ -14,7 +14,8 @@ void UDTSkeletalMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//SkeletalMeshComponent = 
+	// 开启物理模拟
+	SetSimulatePhysics(true);
 
 	PacketManage = new FPacketManage();
 
@@ -42,8 +43,26 @@ void UDTSkeletalMeshComponent::BeginPlay()
 void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	int strength = 100;
+	// 左手添加力
+	//AddForce(FVector(0, -1, 0) * strength, FName("index_03_l"), true);
+	//AddForce(FVector(0, -1, 0) * strength, FName("middle_03_l"), true);
+	//AddForce(FVector(0, -1, 0) * strength, FName("pinky_03_l"), true);
+	//AddForce(FVector(0, -1, 0) * strength, FName("ring_03_l"), true);
+	//AddForce(FVector(0, -1, 0) * strength, FName("thumb_03_l"), true);
+	//// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
+	//AddForce(FVector(0, 0, 1) * strength, FName("index_01_l"), true);
+	//AddForce(FVector(0, 0, -1) * strength, FName("pinky_01_l"), true);
 
-
+	//// 右手添加力
+	//AddForce(FVector(0, 1, 0) * strength, FName("index_03_r"), true);
+	//AddForce(FVector(0, 1, 0) * strength, FName("middle_03_r"), true);
+	//AddForce(FVector(0, 1, 0) * strength, FName("pinky_03_r"), true);
+	//AddForce(FVector(0, 1, 0) * strength, FName("ring_03_r"), true);
+	//AddForce(FVector(0, 1, 0) * strength, FName("thumb_03_r"), true);
+	//// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
+	//AddForce(FVector(0, 0, 1) * strength, FName("index_01_r"), true);
+	//AddForce(FVector(0, 0, -1) * strength, FName("pinky_01_r"), true);
 
 	//return;
 	 //UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("UDTSkeletalMeshComponent TickComponent"));
@@ -111,13 +130,32 @@ void UDTSkeletalMeshComponent::UpdateAvatarPoseNonPhysics(){
     for(int i = 0; i < BONE_NUMS; i++){
         // 获取avatar bone姿态
         //AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], ); 
-		//SetBoneRotationByName(BoneNames[i], ((*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i]* FQuat((*InitialAvatarBonePoses)[i])).Rotator(),EBoneSpaces::WorldSpace);
+		SetBoneRotationByName(BoneNames[i], ((*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i]* FQuat((*InitialAvatarBonePoses)[i])).Rotator(),EBoneSpaces::WorldSpace);
     }
 
 }
 
 
 void UDTSkeletalMeshComponent::SyncPoses(float DeltaTime) {
+	// 左手添加力
+	AddForce(FVector(0, -1, 0) * 10, FName("index_03_l"), true);
+	AddForce(FVector(0, -1, 0) * 10, FName("middle_03_l"), true);
+	AddForce(FVector(0, -1, 0) * 10, FName("pinky_03_l"), true);
+	AddForce(FVector(0, -1, 0) * 10, FName("ring_03_l"), true);
+	AddForce(FVector(0, -1, 0) * 10, FName("thumb_03_l"), true);
+	// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
+	AddForce(FVector(0, 0, 1) * 10, FName("index_01_l"), true);
+	AddForce(FVector(0, 0, -1) * 10, FName("pinky_01_l"), true);
+
+	// 右手添加力
+	AddForce(FVector(0, 1, 0) * 10, FName("index_03_r"), true);
+	AddForce(FVector(0, 1, 0) * 10, FName("middle_03_r"), true);
+	AddForce(FVector(0, 1, 0) * 10, FName("pinky_03_r"), true);
+	AddForce(FVector(0, 1, 0) * 10, FName("ring_03_r"), true);
+	AddForce(FVector(0, 1, 0) * 10, FName("thumb_03_r"), true);
+	// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
+	AddForce(FVector(0, 0, 1) * 10, FName("index_01_r"), true);
+	AddForce(FVector(0, 0, -1) * 10, FName("pinky_01_r"), true);
 
 	// 如果不满IntervalTime，则直接返回
 	StayedTime += DeltaTime;
@@ -158,7 +196,7 @@ void UDTSkeletalMeshComponent::SyncPoses(float DeltaTime) {
 			for (int i = 0; i < BONE_NUMS; i++)
 			{
 				(*PlayerBonePosesTransformation)[i] = (*PlayerBonePoses)[i].Inverse();
-				//(*InitialAvatarBonePoses)[i] = GetBoneRotationByName(BoneNames[i], EBoneSpaces::WorldSpace);
+				(*InitialAvatarBonePoses)[i] = GetBoneRotationByName(BoneNames[i], EBoneSpaces::WorldSpace);
 			}
 
 			UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("Synced! ------"));
