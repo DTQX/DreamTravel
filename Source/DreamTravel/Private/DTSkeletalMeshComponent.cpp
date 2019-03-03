@@ -15,7 +15,7 @@ void UDTSkeletalMeshComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// 开启物理模拟
-	SetSimulatePhysics(true);
+	//SetSimulatePhysics(true);
 
 	PacketManage = new FPacketManage();
 
@@ -43,8 +43,24 @@ void UDTSkeletalMeshComponent::BeginPlay()
 void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	int strength = 100;
-	// 左手添加力
+	return;
+	int strength = 10000;
+	// 左右手掌
+	AddForce(FVector(0, -1, 0) * strength, FName("hand_l"), false);
+	AddForce(FVector(0, 1, 0) * strength, FName("hand_r"), false);
+	// 头
+	//AddForce(FVector(0, 0, 1) * strength * 10, FName("head"), false);
+	AddForce(FVector(0, 0, -1) * strength , FName("spine_02"), false);
+	//AddForce(FVector(0, 0, -1) * strength , FName("foot_r"), false);
+	
+	UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("upperarm_l quat : %s"),* GetBoneQuaternion(BoneNames[0], EBoneSpaces::WorldSpace).ToString());
+	UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("lowerarm_l quat : %s"),* GetBoneQuaternion(BoneNames[1], EBoneSpaces::WorldSpace).ToString());
+	UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("hand_l quat : %s"),* GetBoneQuaternion(BoneNames[2], EBoneSpaces::WorldSpace).ToString());
+
+
+
+	//// 左手添加力
+	
 	//AddForce(FVector(0, -1, 0) * strength, FName("index_03_l"), true);
 	//AddForce(FVector(0, -1, 0) * strength, FName("middle_03_l"), true);
 	//AddForce(FVector(0, -1, 0) * strength, FName("pinky_03_l"), true);
@@ -64,7 +80,7 @@ void UDTSkeletalMeshComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 	//AddForce(FVector(0, 0, 1) * strength, FName("index_01_r"), true);
 	//AddForce(FVector(0, 0, -1) * strength, FName("pinky_01_r"), true);
 
-	//return;
+	
 	 //UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("UDTSkeletalMeshComponent TickComponent"));
 
 	if (PacketManage == nullptr)
@@ -130,7 +146,7 @@ void UDTSkeletalMeshComponent::UpdateAvatarPoseNonPhysics(){
     for(int i = 0; i < BONE_NUMS; i++){
         // 获取avatar bone姿态
         //AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], ); 
-		SetBoneRotationByName(BoneNames[i], ((*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i]* FQuat((*InitialAvatarBonePoses)[i])).Rotator(),EBoneSpaces::WorldSpace);
+		//SetBoneRotationByName(BoneNames[i], ((*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i]* FQuat((*InitialAvatarBonePoses)[i])).Rotator(),EBoneSpaces::WorldSpace);
     }
 
 }
@@ -196,7 +212,7 @@ void UDTSkeletalMeshComponent::SyncPoses(float DeltaTime) {
 			for (int i = 0; i < BONE_NUMS; i++)
 			{
 				(*PlayerBonePosesTransformation)[i] = (*PlayerBonePoses)[i].Inverse();
-				(*InitialAvatarBonePoses)[i] = GetBoneRotationByName(BoneNames[i], EBoneSpaces::WorldSpace);
+				//(*InitialAvatarBonePoses)[i] = GetBoneRotationByName(BoneNames[i], EBoneSpaces::WorldSpace);
 			}
 
 			UE_LOG(DTSkeletalMeshComponent, Warning, TEXT("Synced! ------"));

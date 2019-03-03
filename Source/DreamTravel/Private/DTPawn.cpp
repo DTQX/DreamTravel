@@ -25,6 +25,15 @@ void ADTPawn::BeginPlay()
 
 	PoseableMeshComponent = FindComponentByClass<UPoseableMeshComponent>();
 
+
+	PoseableMeshComponent->SetBoneRotationByName(FName("upperarm_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(0.560380340, -0.564101338, -0.412479103, 0.444549859)), EBoneSpaces::WorldSpace);
+	PoseableMeshComponent->SetBoneRotationByName(FName("lowerarm_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(-0.571011007, 0.613383830, 0.407904714, -0.362381667)), EBoneSpaces::WorldSpace);
+	PoseableMeshComponent->SetBoneRotationByName(FName("hand_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(0.627503574, -0.760303736, 0.162374020, 0.042568613)), EBoneSpaces::WorldSpace);
+
+	/*PoseableMeshComponent->SetBoneRotationByName(FName("upperarm_l"), FRotator(FQuat(0.560380340, -0.564101338, -0.412479103, 0.444549859)), EBoneSpaces::WorldSpace);
+	PoseableMeshComponent->SetBoneRotationByName(FName("lowerarm_l"), FRotator(FQuat(-0.571011007, 0.613383830, 0.407904714, -0.362381667)), EBoneSpaces::WorldSpace);
+	PoseableMeshComponent->SetBoneRotationByName(FName("hand_l"), FRotator(FQuat(0.627503574, -0.760303736, 0.162374020, 0.042568613)), EBoneSpaces::WorldSpace);
+*/
 	PacketManage = new FPacketManage();
 
 	// 初始化PlayerBonePoses
@@ -53,6 +62,9 @@ void ADTPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+
+
 	// 测试时放开
 	return;
 
@@ -70,15 +82,25 @@ void ADTPawn::Tick(float DeltaTime)
 
 	// 更新玩家姿态（玩家即用户）
 	PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
+	//FQuat tmp;
+	//for (int i = 0; i< BONE_NUMS; i++)
+	//{
+	//	tmp = FQuat(FRotator(-90, 0, 0)) * (*PlayerBonePoses)[i];
+	//	//(*PlayerBonePoses)[i] = tmp;
+
+	//}
 
 	// 如果没同步，则同步，然后返回
-	if (PoseSynced == false) {
+	/*if (PoseSynced == false) {
 		SyncPoses(DeltaTime);
 		return;
-	}
+	}*/
 
 	// 更新Avatar姿态
-	UpdateAvatarPoseNonPhysics();
+	if (PoseSynced)
+	{
+		UpdateAvatarPoseNonPhysics();
+	}
 
 
 	////初始化DT，并进行姿态校准
@@ -102,13 +124,13 @@ void ADTPawn::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
+
 void ADTPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ADTPawn::ManualSyncPoses);
 }
-
 
 
 
@@ -132,32 +154,46 @@ void ADTPawn::UpdateAvatarPoseNonPhysics() {
 	for (int i = 0; i < BONE_NUMS; i++) {
 		// 获取avatar bone姿态
 		//AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], ); 
-		PoseableMeshComponent->SetBoneRotationByName(BoneNames[i], ((*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i] * FQuat((*InitialAvatarBonePoses)[i])).Rotator(), EBoneSpaces::WorldSpace);
+		PoseableMeshComponent->SetBoneRotationByName(BoneNames[i], (FQuat(FRotator(90,0,0)) * (*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i] * FQuat((*InitialAvatarBonePoses)[i])).Rotator(), EBoneSpaces::WorldSpace);
 	}
 
 }
 
 
-void ADTPawn::SyncPoses(float DeltaTime) {
-	// 左手添加力
-	PoseableMeshComponent->AddForce(FVector(0, -1, 0) * 10, FName("index_03_l"), true);
-	PoseableMeshComponent->AddForce(FVector(0, -1, 0) * 10, FName("middle_03_l"), true);
-	PoseableMeshComponent->AddForce(FVector(0, -1, 0) * 10, FName("pinky_03_l"), true);
-	PoseableMeshComponent->AddForce(FVector(0, -1, 0) * 10, FName("ring_03_l"), true);
-	PoseableMeshComponent->AddForce(FVector(0, -1, 0) * 10, FName("thumb_03_l"), true);
-	// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
-	PoseableMeshComponent->AddForce(FVector(0, 0, 1) * 10, FName("index_01_l"), true);
-	PoseableMeshComponent->AddForce(FVector(0, 0, -1) * 10, FName("pinky_01_l"), true);
+void ADTPawn::ManualSyncPoses() {
+	PoseSynced = true;
+	//PoseableMeshComponent->SetBoneRotationByName(FName("upperarm_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(0.560380340, -0.564101338, -0.412479103, 0.444549859)), EBoneSpaces::WorldSpace);
+	//PoseableMeshComponent->SetBoneRotationByName(FName("lowerarm_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(-0.571011007, 0.613383830, 0.407904714, -0.362381667)), EBoneSpaces::WorldSpace);
+	//PoseableMeshComponent->SetBoneRotationByName(FName("hand_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(0.627503574, -0.760303736, 0.162374020, 0.042568613)), EBoneSpaces::WorldSpace);
 
-	// 右手添加力
-	PoseableMeshComponent->AddForce(FVector(0, 1, 0) * 10, FName("index_03_r"), true);
-	PoseableMeshComponent->AddForce(FVector(0, 1, 0) * 10, FName("middle_03_r"), true);
-	PoseableMeshComponent->AddForce(FVector(0, 1, 0) * 10, FName("pinky_03_r"), true);
-	PoseableMeshComponent->AddForce(FVector(0, 1, 0) * 10, FName("ring_03_r"), true);
-	PoseableMeshComponent->AddForce(FVector(0, 1, 0) * 10, FName("thumb_03_r"), true);
-	// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
-	PoseableMeshComponent->AddForce(FVector(0, 0, 1) * 10, FName("index_01_r"), true);
-	PoseableMeshComponent->AddForce(FVector(0, 0, -1) * 10, FName("pinky_01_r"), true);
+	for (int i = 0; i < BONE_NUMS; i++)
+	{
+		(*PlayerBonePosesTransformation)[i] = (*PlayerBonePoses)[i].Inverse();
+		(*InitialAvatarBonePoses)[i] = PoseableMeshComponent->GetBoneRotationByName(BoneNames[i], EBoneSpaces::WorldSpace);
+	}
+}
+
+void ADTPawn::SyncPoses(float DeltaTime) {
+	//int Strength = 100;
+	//// 左手添加力
+	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("index_03_l"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("middle_03_l"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("pinky_03_l"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("ring_03_l"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("thumb_03_l"), true);
+	//// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
+	//PoseableMeshComponent->AddForce(FVector(0, 0, 1) * Strength, FName("index_01_l"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, 0, -1) * Strength, FName("pinky_01_l"), true);
+
+	//// 右手添加力
+	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("index_03_r"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("middle_03_r"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("pinky_03_r"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("ring_03_r"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("thumb_03_r"), true);
+	//// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
+	//PoseableMeshComponent->AddForce(FVector(0, 0, 1) * Strength, FName("index_01_r"), true);
+	//PoseableMeshComponent->AddForce(FVector(0, 0, -1) * Strength, FName("pinky_01_r"), true);
 
 	// 如果不满IntervalTime，则直接返回
 	StayedTime += DeltaTime;

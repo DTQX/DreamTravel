@@ -112,8 +112,12 @@ int FPacketManage::Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums){
 		dmpGetQuaternion(&((*PlayerBonePoses)[i]), UnitPacket);
 		//PlayerBonePoses[i].X = i;
 		//UE_LOG(PacketManage, Warning, TEXT("数据包转FQuat %s"), *((*PlayerBonePoses)[i].ToString()));
-
-
+		
+		FVector tmpEuler = (*PlayerBonePoses)[i].Euler();
+		float tmp = tmpEuler.X;
+		tmpEuler.X = tmpEuler.Z;
+		tmpEuler.Z = - tmp;
+		(*PlayerBonePoses)[i] = FQuat::MakeFromEuler(tmpEuler);
     }
 
 	return 1;

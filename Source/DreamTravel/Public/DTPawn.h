@@ -88,9 +88,9 @@ private:
 	int SameTimes = 0;		// 校验已经相同的次数
 	float StayedTime = 0;     // 距上一次校验的时长
 	const float IntervalTime = 1.0;       // 两次校验间的时间间隔
-	const float DeltaSize = 10.0;	// 最初的静止pose与最新的pose的欧拉角的模差如果小于DeltaSize，则说明玩家是静止的。
+	const float DeltaSize = 7.0;	// 最初的静止pose与最新的pose的欧拉角的模差如果小于DeltaSize，则说明玩家是静止的。
 	TArray<FVector> * PlayerBonePosesSync;        // 存放玩家上次静止的pose的欧拉角
 
 	void SyncPoses(float DeltaTime);       // 同步player、avatar
-	
+	void ManualSyncPoses();		// 手动同步
 };

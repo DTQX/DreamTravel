@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "Components/SkeletalMeshComponent.h"
-#include "SkeletalAndPoseableMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+//#include "SkeletalAndPoseableMeshComponent.h"
 #include "DTSkeletalMeshComponent.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(DTSkeletalMeshComponent, Log, All);
@@ -20,7 +20,8 @@ class UPoseableMeshComponent;
  * 
  */
 UCLASS(ClassGroup = ("DreamTravel"), meta = (BlueprintSpawnableComponent))
-class DREAMTRAVEL_API UDTSkeletalMeshComponent : public USkeletalAndPoseableMeshComponent
+//class DREAMTRAVEL_API UDTSkeletalMeshComponent : public USkeletalAndPoseableMeshComponent
+class DREAMTRAVEL_API UDTSkeletalMeshComponent : public USkeletalMeshComponent
 {
 	GENERATED_BODY()
 	

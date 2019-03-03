@@ -46,7 +46,7 @@ void ATestActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 如果是测试则注释return，不然这里使用PacketManage->Connect()会与其他地方冲突（端口只能保持一个连接）
-	return;
+	//return;
 
 	// 连接
 	if (PacketManage->Connect(DeltaTime) == false) {
@@ -64,14 +64,20 @@ void ATestActor::Tick(float DeltaTime)
 	}
     UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
 
+	// 打印旋转轴和角度
+	FVector MyAxis;
+	float Angle;
+	(*PlayerBonePoses)[0].ToAxisAndAngle(MyAxis, Angle);
+    UE_LOG(TestActor, Warning, TEXT("Aixs : %s, Angle: %f"),*MyAxis.ToString(), Angle);
+
 	UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
 	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
 	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
 
 	//cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
 	//if (PoseSynced){
-		//SetActorRotation( (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * FQuat(FRotator(45, 0, 0)));
-		SetActorRotation((*PlayerBonePoses)[0] );
+		SetActorRotation( (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
+		//SetActorRotation((*PlayerBonePoses)[0] );
 
 		// 正式
 		//SetActorRotation(FQuat(FRotator(0, 45, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
