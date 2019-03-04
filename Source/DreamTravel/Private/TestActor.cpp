@@ -21,6 +21,10 @@ ATestActor::ATestActor()
 void ATestActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 测试类计算
+	Colculation();
+
 	PacketManage = new FPacketManage();
 	
 	// 初始化PlayerBonePoses
@@ -61,18 +65,25 @@ void ATestActor::Tick(float DeltaTime)
 	{
 		//UE_LOG(TestActor, Warning, TEXT("%s"), *((*PlayerBonePoses)[i]).ToString());
 		//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i]);
+
 	}
-    UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
+    //UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
 
 	// 打印旋转轴和角度
-	FVector MyAxis;
-	float Angle;
-	(*PlayerBonePoses)[0].ToAxisAndAngle(MyAxis, Angle);
-    UE_LOG(TestActor, Warning, TEXT("Aixs : %s, Angle: %f"),*MyAxis.ToString(), Angle);
+	/*FVector MyAxis;
+	float Angle;*/
+	//((*PlayerBonePoses)[0] * (*LastPlayerBonePoses)[0].Inverse()).ToAxisAndAngle(MyAxis, Angle);
+	////(FQuat(0.034606934, 0.160156250, 0.979675293, 0.115783691) * FQuat(0.034606934, 0.160156250, 0.979675293, 0.115783691).Inverse()).ToAxisAndAngle(MyAxis, Angle);
+ //   UE_LOG(TestActor, Warning, TEXT("Delta Aixs : %s, Angle: %f"),*MyAxis.ToString(), Angle);
+ //   UE_LOG(TestActor, Warning, TEXT("Delta Euler : %s"), *((*PlayerBonePoses)[0] * (*LastPlayerBonePoses)[0].Inverse()).Euler().ToString());
+ //   UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses Euler : %s"), *((*PlayerBonePoses)[0]).Euler().ToString());
+ //   //UE_LOG(TestActor, Warning, TEXT("FQuat : %s, Angle: %f"),*MyAxis.ToString(), Angle);
 
-	UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
-	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
-	UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
+	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
+	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
+	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
+
+	(*LastPlayerBonePoses)[0] = (*PlayerBonePoses)[0];
 
 	//cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
 	//if (PoseSynced){
@@ -82,6 +93,20 @@ void ATestActor::Tick(float DeltaTime)
 		// 正式
 		//SetActorRotation(FQuat(FRotator(0, 45, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
 	//}
+
+}
+
+void ATestActor::Colculation() {
+	FQuat q1 = FQuat::MakeFromEuler(FVector(0, 0, 90));
+	FQuat q2 = FQuat::MakeFromEuler(FVector(45, 0, 90));
+
+	FVector MyAxis;
+	float Angle;
+
+	(q2 * (q1.Inverse())).ToAxisAndAngle(MyAxis, Angle);
+	UE_LOG(TestActor, Warning, TEXT("Delta Aixs : %s, Angle: %f"),*MyAxis.ToString(), Angle);
+
+	UE_LOG(TestActor, Warning, TEXT("Delta Euler : %s"), *((q2 * (q1.Inverse()))).Euler().ToString());
 
 }
 
@@ -105,6 +130,12 @@ void ATestActor::InitPlayerBonePoses(int BoneNums)
 	}
 
 	// 初始化转换Quat
+	LastPlayerBonePoses = new TArray<FQuat>;
+	for (int i = 0; i < BoneNums; i++)
+	{
+		LastPlayerBonePoses->Push(FQuat(0, 0, 0, 0));
+	}
+	
 	PlayerBonePosesTransformation = new TArray<FQuat>;
 	for (int i = 0; i < BoneNums; i++)
 	{

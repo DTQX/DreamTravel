@@ -46,6 +46,8 @@ private:
 	//FQuat * PlayerBonePoses[BONE_NUMS];
 	TArray<FQuat> * PlayerBonePoses;
 
+	TArray<FQuat> * LastPlayerBonePoses;
+
 	TArray<FQuat> * PlayerBonePosesTransformation;		// 初始化转换Quat
 
 	bool PoseSynced = false;
@@ -56,4 +58,6 @@ private:
 	void InitPlayerBonePoses(int BoneNums);		// 初始化PlayerBonePoses
 
 	void SyncPoses();
+
+	void Colculation();
 };
