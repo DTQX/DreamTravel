@@ -40,6 +40,8 @@ void ATestActor::BeginPlay()
 		UE_LOG(TestActor, Warning, TEXT("%s"), *(a->GetName()));
 	}
 
+	//SetActorRotation(FQuat(FRotator(90, 0, 0)));
+
 	// InputComponent->BindAction("Jump", IE_Released, this, &ATestActor::SyncPoses);
 }
 
@@ -79,20 +81,34 @@ void ATestActor::Tick(float DeltaTime)
  //   UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses Euler : %s"), *((*PlayerBonePoses)[0]).Euler().ToString());
  //   //UE_LOG(TestActor, Warning, TEXT("FQuat : %s, Angle: %f"),*MyAxis.ToString(), Angle);
 
-	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
+	UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
+	UE_LOG(TestActor, Warning, TEXT("Delta Quat %s"), *((*PlayerBonePoses)[0] * (*LastPlayerBonePoses)[0].Inverse()).ToString());
+	UE_LOG(TestActor, Warning, TEXT("---- %s"), *((*PlayerBonePoses)[0] * (*PlayerBonePoses)[0].Inverse()).ToString());
 	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
 	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
 
-	(*LastPlayerBonePoses)[0] = (*PlayerBonePoses)[0];
 
 	//cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
 	//if (PoseSynced){
-		SetActorRotation( (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
+	/*	SetActorRotation( (
+			((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] )
+			*
+			(((*PlayerBonePosesTransformation)[0] * (*LastPlayerBonePoses)[0]).Inverse()) ) * GetActorQuat());*/
+
+		SetActorRotation((
+			
+			(*PlayerBonePoses)[0]
+			*
+			((*LastPlayerBonePoses)[0].Inverse())) * (*PlayerBonePosesTransformation)[0]  * GetActorQuat());
+
+
 		//SetActorRotation((*PlayerBonePoses)[0] );
 
 		// 正式
 		//SetActorRotation(FQuat(FRotator(0, 45, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
 	//}
+
+		(*LastPlayerBonePoses)[0] = (*PlayerBonePoses)[0];
 
 }
 
