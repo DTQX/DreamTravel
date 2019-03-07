@@ -40,7 +40,7 @@ void ATestActor::BeginPlay()
 		UE_LOG(TestActor, Warning, TEXT("%s"), *(a->GetName()));
 	}
 
-	//SetActorRotation(FQuat(FRotator(90, 0, 0)));
+	SetActorRotation(FQuat(FRotator(0, 0, 0)));
 
 	// InputComponent->BindAction("Jump", IE_Released, this, &ATestActor::SyncPoses);
 }
@@ -72,18 +72,27 @@ void ATestActor::Tick(float DeltaTime)
     //UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
 
 	// 打印旋转轴和角度
-	/*FVector MyAxis;
-	float Angle;*/
-	//((*PlayerBonePoses)[0] * (*LastPlayerBonePoses)[0].Inverse()).ToAxisAndAngle(MyAxis, Angle);
+	
 	////(FQuat(0.034606934, 0.160156250, 0.979675293, 0.115783691) * FQuat(0.034606934, 0.160156250, 0.979675293, 0.115783691).Inverse()).ToAxisAndAngle(MyAxis, Angle);
- //   UE_LOG(TestActor, Warning, TEXT("Delta Aixs : %s, Angle: %f"),*MyAxis.ToString(), Angle);
  //   UE_LOG(TestActor, Warning, TEXT("Delta Euler : %s"), *((*PlayerBonePoses)[0] * (*LastPlayerBonePoses)[0].Inverse()).Euler().ToString());
  //   UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses Euler : %s"), *((*PlayerBonePoses)[0]).Euler().ToString());
  //   //UE_LOG(TestActor, Warning, TEXT("FQuat : %s, Angle: %f"),*MyAxis.ToString(), Angle);
+	if (MyDeltaTime <0 )
+	{
+		FVector MyAxis;
+		float Angle;
+		((*PlayerBonePoses)[0] * (*LastPlayerBonePoses)[0].Inverse()).ToAxisAndAngle(MyAxis, Angle);
+		UE_LOG(TestActor, Warning, TEXT("Delta Aixs : %s, Angle: %f"),*MyAxis.ToString(), Angle);
+		MyDeltaTime = 0;
+		(*LastPlayerBonePoses)[0] = (*PlayerBonePoses)[0];
 
-	UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
-	UE_LOG(TestActor, Warning, TEXT("Delta Quat %s"), *((*PlayerBonePoses)[0] * (*LastPlayerBonePoses)[0].Inverse()).ToString());
-	UE_LOG(TestActor, Warning, TEXT("---- %s"), *((*PlayerBonePoses)[0] * (*PlayerBonePoses)[0].Inverse()).ToString());
+	}
+	else {
+		MyDeltaTime += DeltaTime;
+	}
+	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses %s"), *((*PlayerBonePoses)[0]).ToString());
+	//UE_LOG(TestActor, Warning, TEXT("Delta Quat %s"), *((*PlayerBonePoses)[0] * (*LastPlayerBonePoses)[0].Inverse()).ToString());
+	//UE_LOG(TestActor, Warning, TEXT("---- %s"), *((*PlayerBonePoses)[0] * (*PlayerBonePoses)[0].Inverse()).ToString());
 	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
 	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
 
@@ -95,12 +104,24 @@ void ATestActor::Tick(float DeltaTime)
 			*
 			(((*PlayerBonePosesTransformation)[0] * (*LastPlayerBonePoses)[0]).Inverse()) ) * GetActorQuat());*/
 
-		SetActorRotation((
+		/*SetActorRotation((
 			
 			(*PlayerBonePoses)[0]
 			*
-			((*LastPlayerBonePoses)[0].Inverse())) * (*PlayerBonePosesTransformation)[0]  * GetActorQuat());
+			((*LastPlayerBonePoses)[0].Inverse())) * (*PlayerBonePosesTransformation)[0]  * GetActorQuat());*/
 
+		// 通过轴来转换
+		/*FVector MyAxis;
+		float Angle;
+		((*PlayerBonePoses)[0] * ((*LastPlayerBonePoses)[0].Inverse())).ToAxisAndAngle(MyAxis, Angle);
+		FVector Axis2 = (*LastPlayerBonePoses)[0] * ((*PlayerBonePosesTransformation)[0]) * MyAxis;
+		SetActorRotation(FQuat(Axis2, Angle) * GetActorQuat());*/
+
+
+		FVector tmp = ((*PlayerBonePoses)[0] * ((*LastPlayerBonePoses)[0].Inverse())).Euler();
+		SetActorRotation( FQuat((*LastPlayerBonePoses)[0] * ((*PlayerBonePosesTransformation)[0]) * FVector(1, 0, 0), tmp.X / 180 * 3.14) *
+			FQuat((*LastPlayerBonePoses)[0] * ((*PlayerBonePosesTransformation)[0]) * FVector(0, 1, 0), tmp.Y / 180 * 3.14) *
+			FQuat((*LastPlayerBonePoses)[0] * ((*PlayerBonePosesTransformation)[0]) * FVector(0, 0, 1), tmp.Z / 180 * 3.14) * GetActorQuat());
 
 		//SetActorRotation((*PlayerBonePoses)[0] );
 
@@ -109,6 +130,7 @@ void ATestActor::Tick(float DeltaTime)
 	//}
 
 		(*LastPlayerBonePoses)[0] = (*PlayerBonePoses)[0];
+
 
 }
 
@@ -133,7 +155,7 @@ void ATestActor::SyncPoses() {
 	{
 		(*PlayerBonePosesTransformation)[0] = (*PlayerBonePoses)[0].Inverse();
 	}
-
+	SetActorRotation(FQuat(FRotator(0, 0, 0)));
 	PoseSynced = true;
 }
 

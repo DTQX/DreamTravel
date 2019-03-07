@@ -50,6 +50,8 @@ private:
 
 	TArray<FQuat> * PlayerBonePosesTransformation;		// 初始化转换Quat
 
+	float MyDeltaTime = 0;
+
 	bool PoseSynced = false;
 
 	// 输入绑定
