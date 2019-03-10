@@ -49,6 +49,7 @@ private:
 	TArray<FQuat> * LastPlayerBonePoses;
 
 	TArray<FQuat> * PlayerBonePosesTransformation;		// 初始化转换Quat
+	FQuat PlayerBonePosesTransformation2;		// 初始化转换Quat2
 
 	float MyDeltaTime = 0;
 
@@ -60,6 +61,7 @@ private:
 	void InitPlayerBonePoses(int BoneNums);		// 初始化PlayerBonePoses
 
 	void SyncPoses();
+	void SyncPoses2();
 
 	void Colculation();
 };
