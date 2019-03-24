@@ -157,7 +157,7 @@ void ADTPawn::UpdateAvatarPoseNonPhysics() {
 		UE_LOG(DTPawn, Warning, TEXT("PlayerBoneStartPoses Euler : %s"), *((*PlayerBoneStartPoses)[i]).Euler().ToString());
 		//UE_LOG(DTPawn, Warning, TEXT("FQuat %d, Euler : %s"), *((*PlayerBone2UE4Poses)[i]).Euler().ToString());
 		UE_LOG(DTPawn, Warning, TEXT("FQuat %d, Euler : %s"), i, *((*PlayerBone2UE4Poses)[i] * (*PlayerBoneStartPoses)[i] * ((*PlayerBoneStartPoses)[i].Inverse()) * (*LastPlayerBonePoses)[i] * (-1) * ((*PlayerBone2UE4Poses)[0] * (*PlayerBoneStartPoses)[i]).Inverse() ).Euler().ToString());
-
+		// 重要！！！正确方案，MPU6轴，对配置位置无要求方案
 		PoseableMeshComponent->SetBoneRotationByName(BoneNames[i], ((*PlayerBone2UE4Poses)[i] * (*PlayerBoneStartPoses)[i] * ((*PlayerBoneStartPoses)[i].Inverse()) * (*LastPlayerBonePoses)[i] * (-1) * ((*PlayerBone2UE4Poses)[0] * (*PlayerBoneStartPoses)[i]).Inverse() * FQuat((*AvatarBoneStartPoses)[i])).Rotator(), EBoneSpaces::WorldSpace);
 		//PoseableMeshComponent->SetBoneRotationByName(BoneNames[i], ((*LastPlayerBonePoses)[i]).Rotator(), EBoneSpaces::WorldSpace);
 	}
