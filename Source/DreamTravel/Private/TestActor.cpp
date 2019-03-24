@@ -52,7 +52,7 @@ void ATestActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 如果是测试则注释return，不然这里使用PacketManage->Connect()会与其他地方冲突（端口只能保持一个连接）
-	//return;
+	return;
 
 	// 连接
 	if (PacketManage->Connect(DeltaTime) == false) {
@@ -94,7 +94,7 @@ void ATestActor::Tick(float DeltaTime)
 	//UE_LOG(TestActor, Warning, TEXT("Delta Quat %s"), *((*PlayerBonePoses)[0] * (*LastPlayerBonePoses)[0].Inverse()).Euler().ToString());
 	//UE_LOG(TestActor, Warning, TEXT("---- %s"), *((*PlayerBonePoses)[0] * (*PlayerBonePoses)[0].Inverse()).ToString());
 	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0]).ToString());
-	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
+	//UE_LOG(TestActor, Warning, TEXT("PlayerBonePosesTransformation %s"), *((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).Euler().ToString());
 
 
 	//cubes[0]->SetAllPhysicsRotation((*PlayerBonePoses)[0]);
@@ -128,17 +128,23 @@ void ATestActor::Tick(float DeltaTime)
 		// 正式
 		//FVector tmp = (*PlayerBonePoses)[0] * (*PlayerBonePosesTransformation)[0].Euler();
 		
-		// 重要！！！  可以让mpu初始状态在X轴向上的情况下完美驱动骨骼
-		//SetActorRotation(FQuat(FRotator(90, 0, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]  * (-1) * FQuat(FRotator(-90, 0, 0)));
+		// 重要！！！  可以让mpu初始状态在X轴向上的情况下完美驱动骨骼 只需同步PlayerBonePosesTransformation
+	// 正确
+	//UE_LOG(TestActor, Warning, TEXT("Fquat %s"), *(FQuat(FRotator(90, 0, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * (-1)  * FQuat(FRotator(-90, 0, 0))).Euler().ToString());
 
+		//SetActorRotation(FQuat(FRotator(90, 0, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * (-1)  * FQuat(FRotator(-90, 0, 0)));
+	// 正确
+		//SetActorRotation(FQuat(FRotator(90, 0, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * (-1)  * (FQuat(FRotator(90, 0, 0)).Inverse()));
 
+	// 正确
 		//SetActorRotation(FQuat(FRotator(45, 0, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]  * (-1) * FQuat(FRotator(-45, 0, 0)));
-
-
-		SetActorRotation((*PlayerBonePosesTransformation)[0] * PlayerBonePosesTransformation2 * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * (-1) * ((*PlayerBonePosesTransformation)[0] * PlayerBonePosesTransformation2).Inverse());
+	// 重要！！！  可以让mpu初始状态在X轴向上的情况下完美驱动骨骼 只需同步PlayerBonePosesTransformation  正确	
+	UE_LOG(TestActor, Warning, TEXT("FQuat : %s"), *((*PlayerBonePosesTransformation)[0] * (PlayerBonePosesTransformation2.Inverse()) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * (-1) * ((*PlayerBonePosesTransformation)[0] * PlayerBonePosesTransformation2).Inverse()).Euler().ToString());
+		SetActorRotation((*PlayerBonePosesTransformation)[0] * PlayerBonePosesTransformation2 * (PlayerBonePosesTransformation2.Inverse()) * (*PlayerBonePoses)[0] * (-1) * ((*PlayerBonePosesTransformation)[0] * PlayerBonePosesTransformation2).Inverse());
 		
-		UE_LOG(TestActor, Warning, TEXT("FQuat Euler : %s, %s"), *((*PlayerBonePosesTransformation)[0] * PlayerBonePosesTransformation2).Euler().ToString(), *(  PlayerBonePosesTransformation2 * (*PlayerBonePosesTransformation)[0]).Euler().ToString());
+		//UE_LOG(TestActor, Warning, TEXT("FQuat Euler : %s, %s"), *((*PlayerBonePosesTransformation)[0] * PlayerBonePosesTransformation2).Euler().ToString(), *(  PlayerBonePosesTransformation2 * (*PlayerBonePosesTransformation)[0]).Euler().ToString());
 
+		// 正确
 		//SetActorRotation((*PlayerBonePoses)[0] * (*PlayerBonePosesTransformation)[0] );
 		//SetActorRotation(FQuat(FRotator(0, 90, 0)));
 		/*FVector MyAxis;
@@ -148,7 +154,7 @@ void ATestActor::Tick(float DeltaTime)
 	
 
 		//UE_LOG(TestActor, Warning, TEXT("FQuat %s,  %s"), *(FQuat(FRotator(0, 90, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString(), * ((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
-
+	// 正确
 		//SetActorRotation( (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
 	//}
 
@@ -188,7 +194,8 @@ void ATestActor::SyncPoses2() {
 
 	
 	
-	PlayerBonePosesTransformation2= (*PlayerBonePoses)[0];
+	PlayerBonePosesTransformation2= (*PlayerBonePoses)[0] ;
+	//PlayerBonePosesTransformation2= (*PlayerBonePoses)[0] * (*PlayerBonePosesTransformation)[0];
 	
 	
 }

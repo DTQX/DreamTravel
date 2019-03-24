@@ -74,13 +74,17 @@ private:
 
 	FPacketManage* PacketManage = nullptr;      // 数据包管理中心
 
-	TArray<FQuat> * PlayerBonePoses;        // 存放用户最新的用户姿态
+	TArray<FQuat> * LastPlayerBonePoses;        // 存放用户最新的用户姿态
 
-	TArray<FQuat> * PlayerBonePosesTransformation;		// 用于姿态初始化的Quat，值为playerBone的初始姿态的逆
+	TArray<FQuat> * PlayerBone2UE4Poses;		// 记录mpu到ue4参考系的transform的逆
 
-	TArray<FRotator> * InitialAvatarBonePoses;		// 保存初始的Avatar姿态
+	TArray<FQuat> * PlayerBoneStartPoses;		// 记录mpu的开始位置，PlayerBone就是MPU
 
-	void InitPoses(int BoneNums);		// 初始化PlayerBonePoses和PlayerBonePosesTransformation
+	
+
+	TArray<FRotator> * AvatarBoneStartPoses;		// 保存初始的Avatar姿态
+
+	void InitPoses(int BoneNums);		// 初始化LastPlayerBonePoses和PlayerBonePosesTransformation
 
 	// 同步相关
 	bool PoseSynced = false;        // 是否已同步
@@ -93,4 +97,5 @@ private:
 
 	void SyncPoses(float DeltaTime);       // 同步player、avatar
 	void ManualSyncPoses();		// 手动同步
+	void ManualSyncPoses2();		// 手动同步2
 };

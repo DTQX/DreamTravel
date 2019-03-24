@@ -36,7 +36,7 @@ void ADTPawn::BeginPlay()
 */
 	PacketManage = new FPacketManage();
 
-	// 初始化PlayerBonePoses
+	// 初始化LastPlayerBonePoses
 	InitPoses(BONE_NUMS);
 
 
@@ -62,11 +62,7 @@ void ADTPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
-
-
-	// 测试时放开
-	return;
+	//return;
 
 	//UE_LOG(DTPawn, Warning, TEXT("ADTPawn TickComponent"));
 
@@ -81,14 +77,12 @@ void ADTPawn::Tick(float DeltaTime)
 	}
 
 	// 更新玩家姿态（玩家即用户）
-	PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
-	//FQuat tmp;
-	//for (int i = 0; i< BONE_NUMS; i++)
-	//{
-	//	tmp = FQuat(FRotator(-90, 0, 0)) * (*PlayerBonePoses)[i];
-	//	//(*PlayerBonePoses)[i] = tmp;
+	PacketManage->UpdatePlayerPose(LastPlayerBonePoses, BONE_NUMS);
+	for (int i = 0; i< BONE_NUMS; i++)
+	{
+		UE_LOG(DTPawn, Warning, TEXT("PlayerBonePoses %d, Euler : %s"), i,*((*LastPlayerBonePoses)[i]).Euler().ToString());
 
-	//}
+	}
 
 	// 如果没同步，则同步，然后返回
 	/*if (PoseSynced == false) {
@@ -130,6 +124,9 @@ void ADTPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ADTPawn::ManualSyncPoses);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ADTPawn::ManualSyncPoses2);
+
+
 }
 
 
@@ -146,21 +143,45 @@ void ADTPawn::Init() {
 void ADTPawn::UpdatePose() {
 
 	//UpdateAvatarPose(AvatarBonePoses, BONE_NUMS);
-	//PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
+	//PacketManage->UpdatePlayerPose(LastPlayerBonePoses, BONE_NUMS);
 
 }
 
 void ADTPawn::UpdateAvatarPoseNonPhysics() {
+	FQuat AvatarTransform;
 	for (int i = 0; i < BONE_NUMS; i++) {
 		// 获取avatar bone姿态
 		//AvatarBonePoses[i] = GetBoneQuaternion(BoneNames[i], ); 
-		PoseableMeshComponent->SetBoneRotationByName(BoneNames[i], (FQuat(FRotator(90,0,0)) * (*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i] * FQuat((*InitialAvatarBonePoses)[i])).Rotator(), EBoneSpaces::WorldSpace);
+		//AvatarTransform = ;
+		UE_LOG(DTPawn, Warning, TEXT("PlayerBone2UE4Poses  Euler : %s"), *((*PlayerBone2UE4Poses)[i]).Euler().ToString());
+		UE_LOG(DTPawn, Warning, TEXT("PlayerBoneStartPoses Euler : %s"), *((*PlayerBoneStartPoses)[i]).Euler().ToString());
+		//UE_LOG(DTPawn, Warning, TEXT("FQuat %d, Euler : %s"), *((*PlayerBone2UE4Poses)[i]).Euler().ToString());
+		UE_LOG(DTPawn, Warning, TEXT("FQuat %d, Euler : %s"), i, *((*PlayerBone2UE4Poses)[i] * (*PlayerBoneStartPoses)[i] * ((*PlayerBoneStartPoses)[i].Inverse()) * (*LastPlayerBonePoses)[i] * (-1) * ((*PlayerBone2UE4Poses)[0] * (*PlayerBoneStartPoses)[i]).Inverse() ).Euler().ToString());
+
+		PoseableMeshComponent->SetBoneRotationByName(BoneNames[i], ((*PlayerBone2UE4Poses)[i] * (*PlayerBoneStartPoses)[i] * ((*PlayerBoneStartPoses)[i].Inverse()) * (*LastPlayerBonePoses)[i] * (-1) * ((*PlayerBone2UE4Poses)[0] * (*PlayerBoneStartPoses)[i]).Inverse() * FQuat((*AvatarBoneStartPoses)[i])).Rotator(), EBoneSpaces::WorldSpace);
+		//PoseableMeshComponent->SetBoneRotationByName(BoneNames[i], ((*LastPlayerBonePoses)[i]).Rotator(), EBoneSpaces::WorldSpace);
 	}
 
 }
 
-
+// 第一次校准，记录mpu到ue4参考系的transform的逆
 void ADTPawn::ManualSyncPoses() {
+	UE_LOG(DTPawn, Warning, TEXT("ManualSyncPoses !"));
+	//PoseSynced = true;
+	//PoseableMeshComponent->SetBoneRotationByName(FName("upperarm_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(0.560380340, -0.564101338, -0.412479103, 0.444549859)), EBoneSpaces::WorldSpace);
+	//PoseableMeshComponent->SetBoneRotationByName(FName("lowerarm_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(-0.571011007, 0.613383830, 0.407904714, -0.362381667)), EBoneSpaces::WorldSpace);
+	//PoseableMeshComponent->SetBoneRotationByName(FName("hand_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(0.627503574, -0.760303736, 0.162374020, 0.042568613)), EBoneSpaces::WorldSpace);
+
+	for (int i = 0; i < BONE_NUMS; i++)
+	{
+		(*PlayerBone2UE4Poses)[i] = (*LastPlayerBonePoses)[i].Inverse();
+	}
+}
+
+// 第二次校准，记录mpu的开始位置，PlayerBone就是MPU
+void ADTPawn::ManualSyncPoses2() {
+	UE_LOG(DTPawn, Warning, TEXT("ManualSyncPoses2 !"));
+
 	PoseSynced = true;
 	//PoseableMeshComponent->SetBoneRotationByName(FName("upperarm_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(0.560380340, -0.564101338, -0.412479103, 0.444549859)), EBoneSpaces::WorldSpace);
 	//PoseableMeshComponent->SetBoneRotationByName(FName("lowerarm_l"), FRotator(FQuat(FRotator(-90, 0, 0)) *FQuat(-0.571011007, 0.613383830, 0.407904714, -0.362381667)), EBoneSpaces::WorldSpace);
@@ -168,32 +189,13 @@ void ADTPawn::ManualSyncPoses() {
 
 	for (int i = 0; i < BONE_NUMS; i++)
 	{
-		(*PlayerBonePosesTransformation)[i] = (*PlayerBonePoses)[i].Inverse();
-		(*InitialAvatarBonePoses)[i] = PoseableMeshComponent->GetBoneRotationByName(BoneNames[i], EBoneSpaces::WorldSpace);
+		(*PlayerBoneStartPoses)[i] = (*LastPlayerBonePoses)[i];
+		(*AvatarBoneStartPoses)[i] = PoseableMeshComponent->GetBoneRotationByName(BoneNames[i], EBoneSpaces::WorldSpace);
 	}
 }
 
+// 自动开始校准，开发时不使用，正式版也不考虑使用
 void ADTPawn::SyncPoses(float DeltaTime) {
-	//int Strength = 100;
-	//// 左手添加力
-	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("index_03_l"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("middle_03_l"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("pinky_03_l"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("ring_03_l"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, -1, 0) * Strength, FName("thumb_03_l"), true);
-	//// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
-	//PoseableMeshComponent->AddForce(FVector(0, 0, 1) * Strength, FName("index_01_l"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, 0, -1) * Strength, FName("pinky_01_l"), true);
-
-	//// 右手添加力
-	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("index_03_r"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("middle_03_r"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("pinky_03_r"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("ring_03_r"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, 1, 0) * Strength, FName("thumb_03_r"), true);
-	//// 对手掌上部加向上的力，下部加向下的力。使手掌掌心朝前
-	//PoseableMeshComponent->AddForce(FVector(0, 0, 1) * Strength, FName("index_01_r"), true);
-	//PoseableMeshComponent->AddForce(FVector(0, 0, -1) * Strength, FName("pinky_01_r"), true);
 
 	// 如果不满IntervalTime，则直接返回
 	StayedTime += DeltaTime;
@@ -211,7 +213,7 @@ void ADTPawn::SyncPoses(float DeltaTime) {
 
 		// 用最初的欧拉角与最新的欧拉角进行比较，如果差值小于，（因为mpu有误差，所以不用直接判断相等）
 		// 如果所有节点都小于，则相等；如果有一个不小于，则认为不相等，并更新相应的PlayerBonePosesSync
-		LastPose = (*PlayerBonePoses)[i].Euler();
+		LastPose = (*LastPlayerBonePoses)[i].Euler();
 		//LastPose -= (*PlayerBonePosesSync)[i];
 
 		if ((LastPose - (*PlayerBonePosesSync)[i]).Size() < DeltaSize) {
@@ -223,7 +225,7 @@ void ADTPawn::SyncPoses(float DeltaTime) {
 			(*PlayerBonePosesSync)[i] = LastPose;
 		}
 
-		UE_LOG(DTPawn, Warning, TEXT("PlayerBonePoses Eular : %s, PlayerBonePosesSync Eular: %s"), *LastPose.ToString(), *(*PlayerBonePosesSync)[i].ToString());
+		UE_LOG(DTPawn, Warning, TEXT("LastPlayerBonePoses Eular : %s, PlayerBonePosesSync Eular: %s"), *LastPose.ToString(), *(*PlayerBonePosesSync)[i].ToString());
 		UE_LOG(DTPawn, Warning, TEXT("Delta Eular: %s, Size: %f,  SizeSquared: %f"), *(LastPose - (*PlayerBonePosesSync)[i]).ToString(), (LastPose - (*PlayerBonePosesSync)[i]).Size(), (LastPose - (*PlayerBonePosesSync)[i]).SizeSquared());
 
 	}
@@ -236,8 +238,8 @@ void ADTPawn::SyncPoses(float DeltaTime) {
 			PoseSynced = true;
 			for (int i = 0; i < BONE_NUMS; i++)
 			{
-				(*PlayerBonePosesTransformation)[i] = (*PlayerBonePoses)[i].Inverse();
-				(*InitialAvatarBonePoses)[i] = PoseableMeshComponent->GetBoneRotationByName(BoneNames[i], EBoneSpaces::WorldSpace);
+				(*PlayerBone2UE4Poses)[i] = (*LastPlayerBonePoses)[i].Inverse();
+				(*AvatarBoneStartPoses)[i] = PoseableMeshComponent->GetBoneRotationByName(BoneNames[i], EBoneSpaces::WorldSpace);
 			}
 
 			UE_LOG(DTPawn, Warning, TEXT("Synced! ------"));
@@ -250,24 +252,27 @@ void ADTPawn::SyncPoses(float DeltaTime) {
 
 void ADTPawn::InitPoses(int BoneNums)
 {
-	PlayerBonePoses = new TArray<FQuat>;
-	PlayerBonePosesTransformation = new TArray<FQuat>;
+	LastPlayerBonePoses = new TArray<FQuat>;
+	PlayerBone2UE4Poses = new TArray<FQuat>;
+	PlayerBoneStartPoses = new TArray<FQuat>;
 	PlayerBonePosesSync = new TArray<FVector>;
-	InitialAvatarBonePoses = new TArray<FRotator>;
+	AvatarBoneStartPoses = new TArray<FRotator>;
 
 	for (int i = 0; i < BoneNums; i++)
 	{
 		// 初始化玩家pose
-		PlayerBonePoses->Push(FQuat(0, 0, 0, 0));
+		LastPlayerBonePoses->Push(FQuat(0, 0, 0, 0));
 
 		// 初始化转换Quat
-		PlayerBonePosesTransformation->Push(FQuat(0, 0, 0, 0));
+		PlayerBone2UE4Poses->Push(FQuat(0, 0, 0, 0));
+
+		PlayerBoneStartPoses->Push(FQuat(0, 0, 0, 0));
 
 		// 初始化同步欧拉
 		PlayerBonePosesSync->Push(FVector(0, 0, 0));
 
-		// 初始化InitialAvatarBonePoses
-		InitialAvatarBonePoses->Push(FRotator(0, 0, 0));
+		// 初始化AvatarBoneStartPoses
+		AvatarBoneStartPoses->Push(FRotator(0, 0, 0));
 	}
 }
 
