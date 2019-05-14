@@ -40,6 +40,8 @@ private:
 
 	//FSerialClass * fSerialClass = nullptr;
 
+	
+
   int ReadLastPacket();   // 读取数据包
   int ReadLastPacket_back();   // 读取数据包,旧版
   //int Packet2Quat(FQuat * PlayerBonePoses[], int BoneNums);  // 数据包转换成Quat
@@ -52,17 +54,19 @@ private:
 
 	// 数据包相关
 	uint8 UnitPacket[UNIT_PACKET_SIZE] = {0};		// 一个mpu的数据
-	uint8 PacketBuff[PACKET_BUFF_SIZE] = {0};     // packet缓存区
+	uint8 PacketBuff[PACKET_SIZE] = {0};     // packet缓存区
 	uint8 LastIncompletePacket[PACKET_SIZE] = {0};     // 上一次不完整的packet
 	const uint8 START_CODE_2 = 44;	// 数据包开始标志符2
 	const uint8 START_CODE_1 = 88;	// 数据包开始标志符1
 	bool IsLastReadPacketComplete = true;	// 记录上一次的读取到的数据包是否完整
+	// 上次读取数据是否出错，默认为true，当IsLastReadError = true时会将当前数据流的读取点定位到START_CODE_2 START_CODE_2之后
+	bool IsLastReadError = true;	
 
 	// 数据读取相关
-	int ReadyBytesSize;
-	int PacketBytesNeeded;
-	int BytesNotNeed;
-	int readPacketSize;
+	int ReadyBytesSize;		// 准备就绪的字节数
+	int PacketBytesNeeded;	
+	int BytesNotNeed;	
+	int readPacketSize;		// 已读取的字节数
 
 	// 端口相关
 	const int COM_PORT = 4;		// 端口号

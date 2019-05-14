@@ -161,6 +161,46 @@ int FSerialClass::ReadData(void *buffer, int limit)
 	return((int)dwBytesRead);
 }
 
+// 读取到数据包结束字符，如果数据未准备则直接返回，或者超过limit时返回。(包括了指定字符)
+int FSerialClass::ReadDataUtil(uint8 *buffer, uint8 end1, uint8 end2, int limit)
+{
+
+	if (!m_bOpened || m_hIDComDev == NULL) return(0);
+
+	BOOL bReadStatus;
+	DWORD dwBytesRead = 1;
+    int readBytesSize = 0;     // 已经读取数据的长度
+	uint8 byteBuffer[1];
+
+	BOOL bEnd1Equalled = false;
+
+    while(limit){
+        bReadStatus = ReadFile(m_hIDComDev, byteBuffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
+        if (bReadStatus) {
+            buffer[readBytesSize] = byteBuffer[0];
+            readBytesSize ++ ;
+            limit --;
+            if(!bEnd1Equalled){
+				if (byteBuffer[0] == end1){
+					bEnd1Equalled = true;
+					UE_LOG(SerialClass, Warning, TEXT("ReadDataUtil:: end1 equal!"));
+				}
+			}else{
+				if (byteBuffer[0] == end2) {
+					UE_LOG(SerialClass, Warning, TEXT("ReadDataUtil:: end2 equal! 数据读取完成"));
+					return readBytesSize;
+				}else {
+					bEnd1Equalled = false;
+				}
+			}
+        }else{
+            UE_LOG(SerialClass, Warning, TEXT("未读取到指定字符"));
+			return readBytesSize;
+        }
+    }
+    return readBytesSize;
+}
+
 // 读取到某个字符，如果数据未准备则直接返回，或者超过limit时返回。(包括了指定字符)
 int FSerialClass::ReadDataUtil(uint8 *buffer, uint8 end1, uint8 end2, int limit)
 {

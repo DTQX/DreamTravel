@@ -58,8 +58,39 @@ int FPacketManage::UpdatePlayerPose(TArray<FQuat>* PlayerBonePoses, int BoneNums
     
 }
 
+int FPacketManage::ReadLastPacket_2(){
+    // 获取准备就绪的字节数
+    ReadyBytesSize =  SerialClass->GetReadySize();
+
+    if(IsLastReadError == true){
+        
+    }
+    
+    // 如果准备就绪的字节数大于PACKET_SIZE，则循环获取一个包的数据，直到准备就绪的字节数不足一个数据包大小
+    // 不需要考虑mpu产生数据量大于ue4处理的数据量，因为最终要保证ue4处理数据量>=mpu4产生数据量
+    while(ReadyBytesSize >= PACKET_SIZE){
+        if(SerialClass->ReadData(PacketBuff, PACKET_SIZE) != PACKET_SIZE){
+            UE_LOG(PacketManage, Warning, TEXT("FPacketManage::ReadLastPacket : SerialClass->ReadData error!"));
+
+            return -1;
+        }
+        if(PacketBuff[0] == START_CODE_1 && PacketBuff[1] == START_CODE_1   // 校验头
+            && PacketBuff[PACKET_SIZE-2] == START_CODE_2 && PacketBuff[PACKET_SIZE-1] == START_CODE_2){     // 校验尾
+            UE_LOG(PacketManage, Warning, TEXT("FPacketManage::ReadLastPacket : data error!"));
+            return -2;
+        }
+    }
 
 
+
+
+
+    
+
+    return 1;
+}
+
+// 数据流格式 S1 S2 24
 int FPacketManage::ReadLastPacket(){
     ReadyBytesSize =  SerialClass->GetReadySize();
 
