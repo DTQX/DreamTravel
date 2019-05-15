@@ -54,7 +54,8 @@ private:
 
 	// 数据包相关
 	uint8 UnitPacket[UNIT_PACKET_SIZE] = {0};		// 一个mpu的数据
-	uint8 PacketBuff[PACKET_SIZE] = {0};     // packet缓存区
+	uint8 PacketBuff[PACKET_SIZE] = {0};     // packet缓存区，2.0版
+	// uint8 PacketBuff[PACKET_BUFF_SIZE] = {0};     // packet缓存区,旧版
 	uint8 LastIncompletePacket[PACKET_SIZE] = {0};     // 上一次不完整的packet
 	const uint8 START_CODE_2 = 44;	// 数据包开始标志符2
 	const uint8 START_CODE_1 = 88;	// 数据包开始标志符1
