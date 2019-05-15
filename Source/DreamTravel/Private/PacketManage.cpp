@@ -151,10 +151,24 @@ int FPacketManage::ReadLastPacket(){
     return 1;
 }
 
+int FPacketManage::Packet2Quat_2(TArray<FQuat>* PlayerBonePoses, int BoneNums){
+    // dmpGetQuaternion(PlayerBonePoses, )
+    for(int i = 0; i < BoneNums; i++){
+		memcpy(UnitPacket, PacketBuff + i * UNIT_PACKET_SIZE * sizeof(uint8) + 2, UNIT_PACKET_SIZE * sizeof(uint8)) ;
+		dmpGetQuaternion(&((*PlayerBonePoses)[i]), UnitPacket);
+		//PlayerBonePoses[i].X = i;
+		//UE_LOG(PacketManage, Warning, TEXT("数据包转FQuat %s"), *((*PlayerBonePoses)[i].ToString()));
+		
+		
+    }
+
+	return 1;
+}
+
 int FPacketManage::Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums){
     // dmpGetQuaternion(PlayerBonePoses, )
     for(int i = 0; i < BoneNums; i++){
-		memcpy(UnitPacket, PacketBuff + i * UNIT_PACKET_SIZE * sizeof(uint8), UNIT_PACKET_SIZE * sizeof(uint8));
+		memcpy(UnitPacket, PacketBuff + i * UNIT_PACKET_SIZE * sizeof(uint8) , UNIT_PACKET_SIZE * sizeof(uint8));
 		dmpGetQuaternion(&((*PlayerBonePoses)[i]), UnitPacket);
 		//PlayerBonePoses[i].X = i;
 		//UE_LOG(PacketManage, Warning, TEXT("数据包转FQuat %s"), *((*PlayerBonePoses)[i].ToString()));
