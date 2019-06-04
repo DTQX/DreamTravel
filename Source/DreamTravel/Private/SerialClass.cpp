@@ -147,15 +147,16 @@ int FSerialClass::ReadData(void *buffer, int limit)
 	bReadStatus = ReadFile(m_hIDComDev, buffer, dwBytesRead, &dwBytesRead, &m_OverlappedRead);
 	if (!bReadStatus){
 		if (GetLastError() == ERROR_IO_PENDING){
-			WaitForSingleObject(m_OverlappedRead.hEvent, 2000);
-			UE_LOG(SerialClass, Warning, TEXT("ReadData::数据读取完成，有等待"));
+			//WaitForSingleObject(m_OverlappedRead.hEvent, 2000);
+			WaitForSingleObject(m_OverlappedRead.hEvent, 200);
+			UE_LOG(SerialClass, Warning, TEXT("FSerialClass::ReadData : read complete with waiting"));
 			//UE_LOG(SerialClass, Warning, TEXT("已读取数据。。。time %f"), FPlatformTime::Seconds());
 			//UE_LOG(SerialClass, Warning, TEXT("已读取数据。。。time %f"), GetWorld()->GetTimeSeconds());
 			return((int)dwBytesRead);
 		}
 		return(0);
 	}
-	UE_LOG(SerialClass, Warning, TEXT("ReadData::数据读取完成"));
+	UE_LOG(SerialClass, Warning, TEXT("FSerialClass::ReadData : read complete"));
 
 
 	return((int)dwBytesRead);

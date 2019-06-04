@@ -62,7 +62,7 @@ void ADTPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//return;
+	return;
 
 	//UE_LOG(DTPawn, Warning, TEXT("ADTPawn TickComponent"));
 
