@@ -9,7 +9,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(TestActor, Log, All);
 
-#define BONE_NUMS (3)		// mpu节点数
+#define BONE_NUMS (6)		// mpu节点数
 
 class FPacketManage;
 class UStaticMeshComponent;
@@ -48,8 +48,8 @@ private:
 
 	TArray<FQuat> * LastPlayerBonePoses;
 
-	TArray<FQuat> * PlayerBonePosesTransformation;		// 初始化转换Quat
-	FQuat PlayerBonePosesTransformation2;		// 初始化转换Quat2
+	TArray<FQuat> * PlayerBonePosesTransformation;		// 初始化转换Quat1,记录mpu初始偏移量
+	FQuat PlayerBonePosesTransformation2;		// 初始化转换Quat2，记录avatar同步位置
 
 	float MyDeltaTime = 0;
 
