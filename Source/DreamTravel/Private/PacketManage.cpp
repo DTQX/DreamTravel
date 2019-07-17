@@ -54,7 +54,7 @@ int FPacketManage::UpdatePlayerPose(TArray<FQuat>* PlayerBonePoses, int BoneNums
     }
 
     // 处理数据
-    Packet2Quat(PlayerBonePoses, BoneNums);
+    Packet2Quat(PlayerBonePoses, BoneNums, PacketBuff);
 
 	return 1;
     
@@ -162,21 +162,7 @@ int FPacketManage::ReadLastPacket(){
 //    return 1;
 //}
 // 数据包转quat
-int FPacketManage::Packet2Quat_2(TArray<FQuat>* PlayerBonePoses, int BoneNums){
-    // dmpGetQuaternion(PlayerBonePoses, )
-    for(int i = 0; i < BoneNums; i++){
-		memcpy(UnitPacket, PacketBuff + i * UNIT_PACKET_SIZE * sizeof(uint8) + 2, UNIT_PACKET_SIZE * sizeof(uint8)) ;
-		dmpGetQuaternion(&((*PlayerBonePoses)[i]), UnitPacket);
-		//PlayerBonePoses[i].X = i;
-		//UE_LOG(PacketManage, Warning, TEXT("数据包转FQuat %s"), *((*PlayerBonePoses)[i].ToString()));
-		
-		
-    }
-
-	return 1;
-}
-// 数据包转quat
-int FPacketManage::Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums){
+int FPacketManage::Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums, uint8 * PacketBuff){
     // dmpGetQuaternion(PlayerBonePoses, )
     for(int i = 0; i < BoneNums; i++){
 		memcpy(UnitPacket, PacketBuff + 2 + i * UNIT_PACKET_SIZE * sizeof(uint8), UNIT_PACKET_SIZE * sizeof(uint8));
@@ -265,8 +251,6 @@ int FPacketManage::ReadLastPacket_back() {
 		}
 	}
 
-
-
 	// 开始读取数据
 	readPacketSize = SerialClass->ReadData(PacketBuff, PURE_PACKET_SIZE);
 	// 如果读取的数据大小不等于期望的数据包大小，则数据出错，丢弃读取到的数据，不进行任何处理， 返回-1
@@ -280,55 +264,42 @@ int FPacketManage::ReadLastPacket_back() {
 }
 
 // 获取mpu的初始偏移量
-int FPacketManage::getOffset(){
-    IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-    // 以读的方式打开文件，期间不允许写
-    IFileHandle* FileHandle = PlatformFile.OpenRead(*FileName, false);
-    if(FileHandle){
-      // 获取数据包 TODO 换个buffer
-      FileHandle->Read(ByteBuffer, PACKET_SIZE);
+int FPacketManage::getOffset(TArray<FQuat> * MpuOffsetPoses, int BoneNums){
 
-      // TODO 加日志
+	TArray<uint8>  buffer;
+	FFileHelper::LoadFileToArray(
+		buffer,
+		//PacketBuff,
+		*MPU_OFFSET_FILE_PATH,
+		EFileWrite::FILEWRITE_None
+	);
 
-      // Close the file again
-      delete FileHandle;
-    }else{
-        UE_LOG(LogTemp, Warning, TEXT("Can not open flie!"));
-    }
-    
+	for (int i = 0; i < 3; i++) {
+		UE_LOG(LogTemp, Warning, TEXT("PacketBuff to read: %d"), buffer[i]);
+	}
+
+	Packet2Quat(MpuOffsetPoses, BoneNums, buffer.GetData());
+
+
+	return 0;
+
 }
 
 // 设置mpu的初始偏移量
 int FPacketManage::setOffset(){
-    IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-    if(!PlatformFile.FileExists(*MPU_OFFSET_FILE_PATH)){
-        UE_LOG(LogTemp, Warning, TEXT("File does not exist!"));
 
-        FString fileContent = "";
-        FString filePath = FString("E:/ue4_test_file.txt");
-        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-        FString FileContent = TEXT("This is a line of text to put in the file.\n");
-        FFileHelper::SaveArrayToFile(
-            new TArrayView <uint8> (),
-            *MPU_OFFSET_FILE_PATH,
-            IFileManager * FileManager,
-            uint32 WriteFlags
-        );
-    }
-    // 以读的方式打开文件，不追加写，写期间不允许读
-    IFileHandle* FileHandle = PlatformFile.OpenWrite(*MPU_OFFSET_FILE_PATH, false, false);
-    if(FileHandle){
+	FFileHelper::SaveArrayToFile(
+		*new TArrayView<uint8>(PacketBuff),
+		//PacketBuff,
+		*MPU_OFFSET_FILE_PATH,
+		&IFileManager::Get(),
+		EFileWrite::FILEWRITE_None
+	);
 
-      // 保存最新的数据包到文件中
-      FileHandle->Write(PacketBuff, PACKET_SIZE);
+	for (int i = 0; i < 3; i++) {
+		UE_LOG(LogTemp, Warning, TEXT("PacketBuff to write: %d"), PacketBuff[i]);
+	}
 
-      // TODO 加日志
-
-
-      // Close the file again
-      delete FileHandle;
-    }else{
-      
-    }
-    
+		
+	return 0;
 }

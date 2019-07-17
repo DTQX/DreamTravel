@@ -23,7 +23,7 @@ void ATestActor::BeginPlay()
 	Super::BeginPlay();
 
 	// 测试类计算
-	//Colculation();
+	Colculation();
 
 	PacketManage = new FPacketManage();
 	
@@ -40,6 +40,8 @@ void ATestActor::BeginPlay()
 		UE_LOG(TestActor, Warning, TEXT("%s"), *(a->GetName()));
 	}
 
+	PacketManage->setOffset();
+	PacketManage->getOffset(PlayerBonePoses, BONE_NUMS);
 }
 
 
@@ -49,7 +51,7 @@ void ATestActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 如果是测试则注释return，不然这里使用PacketManage->Connect()会与其他地方冲突（端口只能保持一个连接）
-	// return;
+	 return;
 
 	// 连接
 	if (PacketManage->Connect(DeltaTime) == false) {
@@ -62,10 +64,14 @@ void ATestActor::Tick(float DeltaTime)
 	PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
 	for (int i = 0; i < BONE_NUMS; i++)
 	{
-		UE_LOG(TestActor, Warning, TEXT("index: %d ,PlayerBonePoses: %s, PlayerBonePosesTransformation: %s, multi: %s"),i,
-			*((*PlayerBonePoses)[i]).ToString(), *((*PlayerBonePosesTransformation)[i]).ToString(), 
-			*((*PlayerBonePoses)[i] * (*PlayerBonePosesTransformation)[i]).ToString());
+		UE_LOG(TestActor, Warning, TEXT("index: %d ,PlayerBonePoses: %s, PlayerBonePosesTransformation: %s, multi: %s, inv-multi:%s"),
+			i,
+			*((*PlayerBonePoses)[i]).ToString(), 
+			*((*PlayerBonePosesTransformation)[i]).ToString(), 
+			*((*PlayerBonePoses)[i] * (*PlayerBonePosesTransformation)[i]).ToString(),
+			*((*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i]).ToString());
 		//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i] * (*PlayerBonePosesTransformation)[i]);
+		cubes[i]->SetAllPhysicsRotation( (*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i]);
 	}
     UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
 
@@ -152,9 +158,13 @@ void ATestActor::Tick(float DeltaTime)
 	
 
 		//UE_LOG(TestActor, Warning, TEXT("FQuat %s,  %s"), *(FQuat(FRotator(0, 90, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString(), * ((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
-	// 正确
-		cubes[5]->SetAllPhysicsRotation( (*PlayerBonePosesTransformation)[5] * (*PlayerBonePoses)[5] * (PlayerBonePosesTransformation2 * (*PlayerBonePosesTransformation)[5]).Inverse());
-	//}
+	// 正确!!!!!!!!!!!!!!!!!!!!
+		//cubes[5]->SetAllPhysicsRotation( (*PlayerBonePosesTransformation)[5] * (*PlayerBonePoses)[5] * (PlayerBonePosesTransformation2 * (*PlayerBonePosesTransformation)[5]).Inverse());
+		//cubes[5]->SetAllPhysicsRotation( (*PlayerBonePosesTransformation)[5] * (*PlayerBonePoses)[5] * ((*PlayerBonePosesTransformation)[5] * PlayerBonePosesTransformation2 ).Inverse());
+		//FQuat q1 = (*PlayerBonePosesTransformation)[5] * (*PlayerBonePoses)[5] * (PlayerBonePosesTransformation2 * (*PlayerBonePosesTransformation)[5]).Inverse();
+		//FQuat q2 = (*PlayerBonePosesTransformation)[5] * (*PlayerBonePoses)[5] * ((*PlayerBonePosesTransformation)[5] * PlayerBonePosesTransformation2).Inverse();
+		//UE_LOG(TestActor, Warning, TEXT("multi : %s, inv-multi : %s"), *(q2 * q1).Euler().ToString(), *(q1 * q2).Euler().ToString());
+		//}
 
 		(*LastPlayerBonePoses)[0] = (*PlayerBonePoses)[0];
 
@@ -170,9 +180,10 @@ void ATestActor::Colculation() {
 
 	(q2 * (q1.Inverse())).ToAxisAndAngle(MyAxis, Angle);
 	//(q2 ).ToAxisAndAngle(MyAxis, Angle);                
-	UE_LOG(TestActor, Warning, TEXT("Delta Aixs : %s, Angle: %f"),*MyAxis.ToString(), Angle);
+	//UE_LOG(TestActor, Warning, TEXT("Delta Aixs : %s, Angle: %f"),*MyAxis.ToString(), Angle);
 
-	UE_LOG(TestActor, Warning, TEXT("Delta Euler : %s"), *((q2 * (q1.Inverse()))).Euler().ToString());
+	//UE_LOG(TestActor, Warning, TEXT("Delta Euler : %s"), *((q2 * (q1.Inverse()))).Euler().ToString());
+	UE_LOG(TestActor, Warning, TEXT("multi : %s, inv-multi : %s"), *(q2 * q1).Euler().ToString(), *(q1 * q2).Euler().ToString());
 
 }
 
