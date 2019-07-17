@@ -67,7 +67,7 @@ void ATestActor::Tick(float DeltaTime)
 			*((*PlayerBonePoses)[i] * (*PlayerBonePosesTransformation)[i]).ToString());
 		//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i] * (*PlayerBonePosesTransformation)[i]);
 	}
-    //UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
+    UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
 
 	// 打印旋转轴和角度
 	
@@ -136,9 +136,9 @@ void ATestActor::Tick(float DeltaTime)
 
 	// 正确
 		//SetActorRotation(FQuat(FRotator(45, 0, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]  * (-1) * FQuat(FRotator(-45, 0, 0)));
-	// 重要！！！  可以让mpu初始状态在X轴向上的情况下完美驱动骨骼 只需同步PlayerBonePosesTransformation  正确	
+	// 最重要！！！  可以让mpu初始状态在X轴向上的情况下完美驱动骨骼 只需同步PlayerBonePosesTransformation  正确	
 	//UE_LOG(TestActor, Warning, TEXT("FQuat : %s"), *((*PlayerBonePosesTransformation)[0] * (PlayerBonePosesTransformation2.Inverse()) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] * (-1) * ((*PlayerBonePosesTransformation)[0] * PlayerBonePosesTransformation2).Inverse()).Euler().ToString());
-		cubes[5]->SetAllPhysicsRotation((*PlayerBonePosesTransformation)[5] * PlayerBonePosesTransformation2 * (PlayerBonePosesTransformation2.Inverse()) * (*PlayerBonePoses)[5] * (-1) * ((*PlayerBonePosesTransformation)[5] * PlayerBonePosesTransformation2).Inverse());
+		//cubes[5]->SetAllPhysicsRotation((*PlayerBonePosesTransformation)[5] * PlayerBonePosesTransformation2 * (PlayerBonePosesTransformation2.Inverse()) * (*PlayerBonePoses)[5] * (-1) * ((*PlayerBonePosesTransformation)[5] * PlayerBonePosesTransformation2).Inverse());
 		
 		//UE_LOG(TestActor, Warning, TEXT("FQuat Euler : %s, %s"), *((*PlayerBonePosesTransformation)[0] * PlayerBonePosesTransformation2).Euler().ToString(), *(  PlayerBonePosesTransformation2 * (*PlayerBonePosesTransformation)[0]).Euler().ToString());
 
@@ -153,7 +153,7 @@ void ATestActor::Tick(float DeltaTime)
 
 		//UE_LOG(TestActor, Warning, TEXT("FQuat %s,  %s"), *(FQuat(FRotator(0, 90, 0)) * (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString(), * ((*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0]).ToString());
 	// 正确
-		//SetActorRotation( (*PlayerBonePosesTransformation)[0] * (*PlayerBonePoses)[0] );
+		cubes[5]->SetAllPhysicsRotation( (*PlayerBonePosesTransformation)[5] * (*PlayerBonePoses)[5] * (PlayerBonePosesTransformation2 * (*PlayerBonePosesTransformation)[5]).Inverse());
 	//}
 
 		(*LastPlayerBonePoses)[0] = (*PlayerBonePoses)[0];
