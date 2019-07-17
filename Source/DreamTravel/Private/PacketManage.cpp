@@ -91,7 +91,7 @@ int FPacketManage::ReadLastPacket(){
     ReadyBytesSize =  SerialClass->GetReadySize();
 
     // 如果准备就绪的字节数大于PACKET_SIZE，则循环获取一个包的数据，直到准备就绪的字节数不足一个数据包大小
-    // 不需要考虑mpu产生数据量大于ue4处理的数据量，因为最终要保证ue4处理数据量>=mpu4产生数据量
+    // 不需要考虑mpu产生数据量大于ue4处理的数据量，因为最终要保证ue4处理数据量>=mpu4产生数据量，所以循环读取就可以
     while(ReadyBytesSize >= PACKET_SIZE){
         if(SerialClass->ReadData(PacketBuff, PACKET_SIZE) != PACKET_SIZE){
             UE_LOG(PacketManage, Warning, TEXT("FPacketManage::ReadLastPacket : SerialClass->ReadData error!"));
