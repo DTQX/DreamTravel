@@ -2,6 +2,8 @@
 
 #include "PacketManage.h"
 #include "SerialClass.h"
+#include "PlatformFilemanager.h"
+#include "FileHelper.h"
 
 
 DEFINE_LOG_CATEGORY(PacketManage);
@@ -15,11 +17,11 @@ FPacketManage::~FPacketManage()
 {
 	delete SerialClass;
 }
-
+// 是否已连接，true：已连接，false：未连接
 bool FPacketManage::IsConnected(){
     return SerialClass->IsOpened();
 }
-
+// 进行连接，如果已连接则直接返回true，否则进行连接
 bool FPacketManage::Connect(float DeltaTime){
 	// 如果已连接，则直接返回true
 	if (IsConnected()) {
@@ -39,7 +41,7 @@ bool FPacketManage::Connect(float DeltaTime){
     }
     return false;
 }
-
+// 更新playPose
 int FPacketManage::UpdatePlayerPose(TArray<FQuat>* PlayerBonePoses, int BoneNums){
     for(int i = 0; i < BoneNums; i++){
         
@@ -58,7 +60,7 @@ int FPacketManage::UpdatePlayerPose(TArray<FQuat>* PlayerBonePoses, int BoneNums
     
 }
 
-// 数据流格式 S1 S1 24 S2 S2
+// 读取最新的数据包， 数据流格式 S1 S1 24 S2 S2
 int FPacketManage::ReadLastPacket(){
     // 获取准备就绪的字节数
     ReadyBytesSize =  SerialClass->GetReadySize();
@@ -159,7 +161,7 @@ int FPacketManage::ReadLastPacket(){
 //
 //    return 1;
 //}
-
+// 数据包转quat
 int FPacketManage::Packet2Quat_2(TArray<FQuat>* PlayerBonePoses, int BoneNums){
     // dmpGetQuaternion(PlayerBonePoses, )
     for(int i = 0; i < BoneNums; i++){
@@ -173,7 +175,7 @@ int FPacketManage::Packet2Quat_2(TArray<FQuat>* PlayerBonePoses, int BoneNums){
 
 	return 1;
 }
-
+// 数据包转quat
 int FPacketManage::Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums){
     // dmpGetQuaternion(PlayerBonePoses, )
     for(int i = 0; i < BoneNums; i++){
@@ -187,7 +189,7 @@ int FPacketManage::Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums){
 
 	return 0;
 }
-
+// 一个mpu的数据转quat
 uint8 FPacketManage::dmpGetQuaternionL(int16 *data, const uint8* packet) {
     // TODO: accommodate different arrangements of sent data (ONLY default supported now)
     data[0] = ((packet[0] << 8) | packet[1]);
@@ -196,7 +198,7 @@ uint8 FPacketManage::dmpGetQuaternionL(int16 *data, const uint8* packet) {
     data[3] = ((packet[6] << 8) | packet[7]);
     return 0;
 }
-
+// 一个mpu的数据转quat
 uint8 FPacketManage::dmpGetQuaternion(FQuat* q, const uint8* packet) {
     // TODO: accommodate different arrangements of sent data (ONLY default supported now)
     int16 qI[4];
@@ -219,7 +221,7 @@ uint8 FPacketManage::dmpGetQuaternion(FQuat* q, const uint8* packet) {
     return status; // int16 return value, indicates error if this line is reached
 }
 
-
+// 获取最新的数据包，备份
 int FPacketManage::ReadLastPacket_back() {
 	ReadyBytesSize = SerialClass->GetReadySize();
 
@@ -275,4 +277,58 @@ int FPacketManage::ReadLastPacket_back() {
 	}
 
 	return 1;
+}
+
+// 获取mpu的初始偏移量
+int FPacketManage::getOffset(){
+    IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+    // 以读的方式打开文件，期间不允许写
+    IFileHandle* FileHandle = PlatformFile.OpenRead(*FileName, false);
+    if(FileHandle){
+      // 获取数据包 TODO 换个buffer
+      FileHandle->Read(ByteBuffer, PACKET_SIZE);
+
+      // TODO 加日志
+
+      // Close the file again
+      delete FileHandle;
+    }else{
+        UE_LOG(LogTemp, Warning, TEXT("Can not open flie!"));
+    }
+    
+}
+
+// 设置mpu的初始偏移量
+int FPacketManage::setOffset(){
+    IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+    if(!PlatformFile.FileExists(*MPU_OFFSET_FILE_PATH)){
+        UE_LOG(LogTemp, Warning, TEXT("File does not exist!"));
+
+        FString fileContent = "";
+        FString filePath = FString("E:/ue4_test_file.txt");
+        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+        FString FileContent = TEXT("This is a line of text to put in the file.\n");
+        FFileHelper::SaveArrayToFile(
+            new TArrayView <uint8> (),
+            *MPU_OFFSET_FILE_PATH,
+            IFileManager * FileManager,
+            uint32 WriteFlags
+        );
+    }
+    // 以读的方式打开文件，不追加写，写期间不允许读
+    IFileHandle* FileHandle = PlatformFile.OpenWrite(*MPU_OFFSET_FILE_PATH, false, false);
+    if(FileHandle){
+
+      // 保存最新的数据包到文件中
+      FileHandle->Write(PacketBuff, PACKET_SIZE);
+
+      // TODO 加日志
+
+
+      // Close the file again
+      delete FileHandle;
+    }else{
+      
+    }
+    
 }

@@ -38,16 +38,7 @@ private:
 
 	FSerialClass * SerialClass = nullptr;
 
-	//FSerialClass * fSerialClass = nullptr;
-
-	
-
-  int ReadLastPacket();   // 读取数据包
-  int ReadLastPacket_back();   // 读取数据包,旧版
-  //int Packet2Quat(FQuat * PlayerBonePoses[], int BoneNums);  // 数据包转换成Quat
-  int Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums);  // 数据包转换成Quat
-  uint8 dmpGetQuaternionL(int16 *data, const uint8* packet);   //packet 转int16
-  uint8 dmpGetQuaternion(FQuat* q, const uint8* packet);   //  packet 转 quat
+  const FString MPU_OFFSET_FILE_PATH = FString("C:/dream_travel/mpu_offset.ini");
 
   float ConnectWaitedTime = 1.0f;      //  已等待的连接时间
   const float ExpectConnectWaitTime = 1.0f;     // 需要等待的连接时间
@@ -73,5 +64,14 @@ private:
 	//const int COM_PORT = 3;		// 端口号
 	const int COM_PORT = 6;		// 端口号
 	const int COM_RATE = 115200;	// 串口速率
+
+  int ReadLastPacket();   // 读取数据包
+  int ReadLastPacket_back();   // 读取数据包,旧版
+  //int Packet2Quat(FQuat * PlayerBonePoses[], int BoneNums);  // 数据包转换成Quat
+  int Packet2Quat(TArray<FQuat>* PlayerBonePoses, int BoneNums);  // 数据包转换成Quat
+  uint8 dmpGetQuaternionL(int16 *data, const uint8* packet);   //packet 转int16
+  uint8 dmpGetQuaternion(FQuat* q, const uint8* packet);   //  packet 转 quat
+  int getOffset(TArray<FQuat>* PlayerBonePoses);    // 获取mpu最初的偏移量
+  int setOffset();    // 设置mpu最初的偏移量
 
 };
