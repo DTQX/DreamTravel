@@ -51,8 +51,8 @@ private:
 	uint8 PacketBuff[PACKET_SIZE] = {1,1};     // packet缓存区，2.0版
 	// uint8 PacketBuff[PACKET_BUFF_SIZE] = {0};     // packet缓存区,旧版
 	uint8 LastIncompletePacket[PACKET_SIZE] = {0};     // 上一次不完整的packet
-	const uint8 START_CODE_2 = 44;	// 数据包开始标志符2
-	const uint8 START_CODE_1 = 88;	// 数据包开始标志符1
+	const uint8 END_CODE = 44;	// 数据包开始标志符2
+	const uint8 START_CODE = 88;	// 数据包开始标志符1
 	bool IsLastReadPacketComplete = true;	// 记录上一次的读取到的数据包是否完整
 	// 上次读取数据是否出错，默认为true，当IsLastReadError = true时会将当前数据流的读取点定位到START_CODE_2 START_CODE_2之后
 	bool IsLastReadError = true;	
