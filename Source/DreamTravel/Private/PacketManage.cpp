@@ -239,7 +239,7 @@ int FPacketManage::ReadLastPacket_back()
 }
 
 // 获取mpu的初始偏移量
-int FPacketManage::getMPUOffset(TArray<FQuat> *MpuOffsetPoses, int BoneNums)
+int FPacketManage::GetMPUOffset(TArray<FQuat> *MpuOffsetPoses, int BoneNums)
 {
 
     TArray<uint8> buffer;
@@ -270,7 +270,7 @@ int FPacketManage::getMPUOffset(TArray<FQuat> *MpuOffsetPoses, int BoneNums)
 }
 
 // 设置mpu的初始偏移量
-int FPacketManage::setMPUOffset(bool SyncToRemote)
+int FPacketManage::SetMPUOffset(bool SyncToRemote)
 {
 
     FFileHelper::SaveArrayToFile(

@@ -40,8 +40,8 @@ void ATestActor::BeginPlay()
 		UE_LOG(TestActor, Warning, TEXT("%s"), *(a->GetName()));
 	}
 
-	PacketManage->setMPUOffset(true);
-	PacketManage->getMPUOffset(PlayerBonePoses, BONE_NUMS);
+	PacketManage->SetMPUOffset(true);
+	PacketManage->GetMPUOffset(PlayerBonePoses, BONE_NUMS);
 }
 
 
@@ -205,8 +205,11 @@ void ATestActor::SyncPoses2() {
 	
 	PlayerBonePosesTransformation2= (*PlayerBonePoses)[5] ;
 	//PlayerBonePosesTransformation2= (*PlayerBonePoses)[0] * (*PlayerBonePosesTransformation)[0];
-	
-	
+}
+
+void ATestActor::setMpuOffset(){
+	UE_LOG(TestActor, Warning, TEXT("setMpuOffset!"));
+  PacketManage->SetMPUOffset(true);
 }
 
 void ATestActor::InitPlayerBonePoses(int BoneNums)
@@ -234,7 +237,8 @@ void ATestActor::InitPlayerBonePoses(int BoneNums)
 void ATestActor::SetupPlayerInputComponent(UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
-
+  // TODO
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ATestActor::SetMPUOffset);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ATestActor::SyncPoses);
 	InputComponent->BindAction("Fire", IE_Pressed, this, &ATestActor::SyncPoses2);
 }

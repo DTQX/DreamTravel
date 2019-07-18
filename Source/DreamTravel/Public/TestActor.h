@@ -62,6 +62,7 @@ private:
 
 	void SyncPoses();
 	void SyncPoses2();
+  void setMpuOffset()
 
 	void Colculation();
 };
