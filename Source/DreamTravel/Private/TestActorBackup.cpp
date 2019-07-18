@@ -23,7 +23,7 @@ void ATestActor::BeginPlay()
 	Super::BeginPlay();
 
 	// 测试类计算
-	// Colculation();
+	Colculation();
 
 	PacketManage = new FPacketManage();
 	
@@ -50,7 +50,7 @@ void ATestActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 如果是测试则注释return，不然这里使用PacketManage->Connect()会与其他地方冲突（端口只能保持一个连接）
-	// return;
+	 return;
 
 	// 连接
 	if (PacketManage->Connect(DeltaTime) == false) {
@@ -63,14 +63,14 @@ void ATestActor::Tick(float DeltaTime)
 	PacketManage->UpdatePlayerPose(PlayerBonePoses, BONE_NUMS);
 	for (int i = 0; i < BONE_NUMS; i++)
 	{
-		UE_LOG(TestActor, Warning, TEXT("index: %d ,PlayerBonePoses: %s, MPUOffsetPose: %s, multi: %s, inv-multi:%s"),
+		UE_LOG(TestActor, Warning, TEXT("index: %d ,PlayerBonePoses: %s, PlayerBonePosesTransformation: %s, multi: %s, inv-multi:%s"),
 			i,
 			*((*PlayerBonePoses)[i]).ToString(), 
-			*((*MPUOffsetPose)[i]).ToString(),
-			*((*PlayerBonePoses)[i] * (*MPUOffsetPose)[i]).ToString(),
-			*((*MPUOffsetPose)[i] * (*PlayerBonePoses)[i]).ToString());
+			*((*PlayerBonePosesTransformation)[i]).ToString(), 
+			*((*PlayerBonePoses)[i] * (*PlayerBonePosesTransformation)[i]).ToString(),
+			*((*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i]).ToString());
 		//cubes[i]->SetAllPhysicsRotation((*PlayerBonePoses)[i] * (*PlayerBonePosesTransformation)[i]);
-		cubes[i]->SetAllPhysicsRotation( (*MPUOffsetPose)[i] * (*PlayerBonePoses)[i]);
+		cubes[i]->SetAllPhysicsRotation( (*PlayerBonePosesTransformation)[i] * (*PlayerBonePoses)[i]);
 	}
     UE_LOG(TestActor, Warning, TEXT("PlayerBonePoses size: %f, SizeSquared: %f"),(*PlayerBonePoses)[0].Size(), (*PlayerBonePoses)[0].SizeSquared());
 
@@ -208,9 +208,9 @@ void ATestActor::SyncPoses2() {
 
 void ATestActor::SetMpuOffset(){
 	UE_LOG(TestActor, Warning, TEXT("SetMpuOffset!"));
-	// 设置新的mpu offset
-	PacketManage->SetMPUOffset(true);
-	// 再获取新的mpu offset，并将其应用到现在的pose同步中
+  // 设置新的mpu offset
+  PacketManage->SetMPUOffset(true);
+  // 再获取新的mpu offset，并将其应用到现在的pose同步中
 	PacketManage->GetMPUOffset(MPUOffsetPose, BONE_NUMS);
 }
 
@@ -246,8 +246,8 @@ void ATestActor::SetupPlayerInputComponent(UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
   // TODO
-	InputComponent->BindAction("Jump", IE_Pressed, this, &ATestActor::SetMpuOffset);
-	//InputComponent->BindAction("Jump", IE_Pressed, this, &ATestActor::SyncPoses);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ATestActor::SetMPUOffset);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ATestActor::SyncPoses);
 	InputComponent->BindAction("Fire", IE_Pressed, this, &ATestActor::SyncPoses2);
 }
 

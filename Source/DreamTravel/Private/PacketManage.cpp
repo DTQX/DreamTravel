@@ -239,7 +239,7 @@ int FPacketManage::ReadLastPacket_back()
 }
 
 // 获取mpu的初始偏移量
-int FPacketManage::GetMPUOffset(TArray<FQuat> *MpuOffsetPoses, int BoneNums)
+int FPacketManage::GetMPUOffset(TArray<FQuat> * MpuOffsetPoses, int BoneNums)
 {
 
     TArray<uint8> buffer;
@@ -259,12 +259,17 @@ int FPacketManage::GetMPUOffset(TArray<FQuat> *MpuOffsetPoses, int BoneNums)
         // 再保存到本地  TODO
     }
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 10; i++)
     {
         UE_LOG(LogTemp, Warning, TEXT("PacketBuff to read: %d"), buffer[i]);
     }
 
     Packet2Quat(MpuOffsetPoses, BoneNums, buffer.GetData());
+
+	for (int i = 0; i < MpuOffsetPoses->Num(); i++)
+	{
+		(*MpuOffsetPoses)[i] = (*MpuOffsetPoses)[i].Inverse();
+	}
 
     return 0;
 }
@@ -281,7 +286,7 @@ int FPacketManage::SetMPUOffset(bool SyncToRemote)
         &IFileManager::Get(),
         EFileWrite::FILEWRITE_None);
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 10; i++)
     {
         UE_LOG(LogTemp, Warning, TEXT("PacketBuff to write: %d"), PacketBuff[i]);
     }
