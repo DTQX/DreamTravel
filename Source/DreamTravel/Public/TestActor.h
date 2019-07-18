@@ -50,6 +50,9 @@ private:
 
 	TArray<FQuat> * PlayerBonePosesTransformation;		// 初始化转换Quat1,记录mpu初始偏移量
 	FQuat PlayerBonePosesTransformation2;		// 初始化转换Quat2，记录avatar同步位置
+	TArray<FQuat> * MPUOffsetPose;  // 记录mpu初始偏移量
+
+
 
 	float MyDeltaTime = 0;
 
@@ -62,7 +65,7 @@ private:
 
 	void SyncPoses();
 	void SyncPoses2();
-  void setMpuOffset()
+  void SetMpuOffset()
 
 	void Colculation();
 };

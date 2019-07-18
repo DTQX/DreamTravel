@@ -272,6 +272,7 @@ int FPacketManage::GetMPUOffset(TArray<FQuat> *MpuOffsetPoses, int BoneNums)
 // 设置mpu的初始偏移量
 int FPacketManage::SetMPUOffset(bool SyncToRemote)
 {
+    // TODO 以后加上判断，如果mpu数据稳定了，再保存
 
     FFileHelper::SaveArrayToFile(
         *new TArrayView<uint8>(PacketBuff),

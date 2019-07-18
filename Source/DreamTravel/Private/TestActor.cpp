@@ -40,8 +40,7 @@ void ATestActor::BeginPlay()
 		UE_LOG(TestActor, Warning, TEXT("%s"), *(a->GetName()));
 	}
 
-	PacketManage->SetMPUOffset(true);
-	PacketManage->GetMPUOffset(PlayerBonePoses, BONE_NUMS);
+	PacketManage->GetMPUOffset(MPUOffsetPose, BONE_NUMS);
 }
 
 
@@ -207,9 +206,12 @@ void ATestActor::SyncPoses2() {
 	//PlayerBonePosesTransformation2= (*PlayerBonePoses)[0] * (*PlayerBonePosesTransformation)[0];
 }
 
-void ATestActor::setMpuOffset(){
-	UE_LOG(TestActor, Warning, TEXT("setMpuOffset!"));
+void ATestActor::SetMpuOffset(){
+	UE_LOG(TestActor, Warning, TEXT("SetMpuOffset!"));
+  // 设置新的mpu offset
   PacketManage->SetMPUOffset(true);
+  // 再获取新的mpu offset，并将其应用到现在的pose同步中
+	PacketManage->GetMPUOffset(MPUOffsetPose, BONE_NUMS);
 }
 
 void ATestActor::InitPlayerBonePoses(int BoneNums)
@@ -231,6 +233,12 @@ void ATestActor::InitPlayerBonePoses(int BoneNums)
 	for (int i = 0; i < BoneNums; i++)
 	{
 		PlayerBonePosesTransformation->Push(FQuat(0, 0, 0, 1));
+	}
+
+	MPUOffsetPose = new TArray<FQuat>;
+	for (int i = 0; i < BoneNums; i++)
+	{
+		MPUOffsetPose->Push(FQuat(0, 0, 0, 1));
 	}
 }
 
