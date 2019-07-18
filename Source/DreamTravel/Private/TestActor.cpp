@@ -40,8 +40,8 @@ void ATestActor::BeginPlay()
 		UE_LOG(TestActor, Warning, TEXT("%s"), *(a->GetName()));
 	}
 
-	PacketManage->setOffset();
-	PacketManage->getOffset(PlayerBonePoses, BONE_NUMS);
+	PacketManage->setMPUOffset(true);
+	PacketManage->getMPUOffset(PlayerBonePoses, BONE_NUMS);
 }
 
 
