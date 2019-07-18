@@ -35,7 +35,7 @@ public:
     int UpdatePlayerPose(TArray<FQuat>* PlayerBonePoses, int BoneNums);
 
 	int getOffset(TArray<FQuat> * MpuOffsetPoses, int BoneNums);    // 获取mpu最初的偏移量
-	int setOffset();    // 设置mpu最初的偏移量
+	int setOffset(setOffset(bool SyncToRemote));    // 设置mpu最初的偏移量
 
 private:
 

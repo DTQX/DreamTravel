@@ -267,12 +267,22 @@ int FPacketManage::ReadLastPacket_back() {
 int FPacketManage::getOffset(TArray<FQuat> * MpuOffsetPoses, int BoneNums){
 
 	TArray<uint8>  buffer;
-	FFileHelper::LoadFileToArray(
-		buffer,
-		//PacketBuff,
-		*MPU_OFFSET_FILE_PATH,
-		EFileWrite::FILEWRITE_None
-	);
+  if(FPlatformFileManager::Get().GetPlatformFile().FileExists(*MPU_OFFSET_FILE_PATH)){
+    // 如果本地有配置，则从本地获取
+    FFileHelper::LoadFileToArray(
+      buffer,
+      //PacketBuff,
+      *MPU_OFFSET_FILE_PATH,
+      EFileWrite::FILEWRITE_None
+    );
+  }else
+  {
+    // 本地没有则从远程服务器获取， TODO
+
+    // 再保存到本地  TODO
+  }
+  
+
 
 	for (int i = 0; i < 3; i++) {
 		UE_LOG(LogTemp, Warning, TEXT("PacketBuff to read: %d"), buffer[i]);
@@ -286,7 +296,7 @@ int FPacketManage::getOffset(TArray<FQuat> * MpuOffsetPoses, int BoneNums){
 }
 
 // 设置mpu的初始偏移量
-int FPacketManage::setOffset(){
+int FPacketManage::setOffset(bool SyncToRemote){
 
 	FFileHelper::SaveArrayToFile(
 		*new TArrayView<uint8>(PacketBuff),
@@ -300,6 +310,9 @@ int FPacketManage::setOffset(){
 		UE_LOG(LogTemp, Warning, TEXT("PacketBuff to write: %d"), PacketBuff[i]);
 	}
 
+  if(SyncToRemote){
+    // TODO 同步到远程
+  }
 		
 	return 0;
 }
