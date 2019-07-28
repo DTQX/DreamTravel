@@ -122,21 +122,61 @@ int FPacketManage::ReadLastPacket()
     return 0;
 }
 
+//
+//// 数据包转quat
+//int FPacketManage::Packet2Quat(TArray<FQuat> *PlayerBonePoses, int BoneNums, uint8 *PacketBuff)
+//{
+//    // dmpGetQuaternion(PlayerBonePoses, )
+//    for (int i = 0; i < BoneNums; i++)
+//    {
+//        memcpy(UnitPacket, PacketBuff + 2 + i * UNIT_PACKET_SIZE * sizeof(uint8), UNIT_PACKET_SIZE * sizeof(uint8));
+//        dmpGetQuaternion(&((*PlayerBonePoses)[i]), UnitPacket);
+//        //PlayerBonePoses[i].X = i;
+//        //UE_LOG(PacketManage, Warning, TEXT("数据包转FQuat %s"), *((*PlayerBonePoses)[i].ToString()));
+//    }
+//
+//    return 0;
+//}
 
-// 数据包转quat
+float charToFloat(unsigned char *s)
+{
+	union change
+	{
+		float d;
+		unsigned char dat[4];
+	}rs;
+	rs.dat[0] = s[0];
+	rs.dat[1] = s[1];
+	rs.dat[2] = s[2];
+	rs.dat[3] = s[3];
+
+	return rs.d;
+}
+// 数据包转quat 其他算法比较测试版
 int FPacketManage::Packet2Quat(TArray<FQuat> *PlayerBonePoses, int BoneNums, uint8 *PacketBuff)
 {
-    // dmpGetQuaternion(PlayerBonePoses, )
-    for (int i = 0; i < BoneNums; i++)
-    {
-        memcpy(UnitPacket, PacketBuff + 2 + i * UNIT_PACKET_SIZE * sizeof(uint8), UNIT_PACKET_SIZE * sizeof(uint8));
-        dmpGetQuaternion(&((*PlayerBonePoses)[i]), UnitPacket);
-        //PlayerBonePoses[i].X = i;
-        //UE_LOG(PacketManage, Warning, TEXT("数据包转FQuat %s"), *((*PlayerBonePoses)[i].ToString()));
-    }
+
+	memcpy(UnitPacket, PacketBuff + 2 , UNIT_PACKET_SIZE * sizeof(uint8));
+	// 第一个是mpu自带算法
+	dmpGetQuaternion(&((*PlayerBonePoses)[0]), UnitPacket);
+	// 第二个是其他算法
+	//(*PlayerBonePoses)[1].W = (float)((PacketBuff[10] << 24) | (PacketBuff[11] << 16) | (PacketBuff[12] << 8) | PacketBuff[13]);
+	//(*PlayerBonePoses)[1].X = (float)((PacketBuff[14] << 24) | (PacketBuff[15] << 16) | (PacketBuff[16] << 8) | PacketBuff[17]);
+	//(*PlayerBonePoses)[1].Y = (float)((PacketBuff[18] << 24) | (PacketBuff[19] << 16) | (PacketBuff[20] << 8) | PacketBuff[21]);
+	//(*PlayerBonePoses)[1].Z = (float)((PacketBuff[22] << 24) | (PacketBuff[23] << 16) | (PacketBuff[24] << 8) | PacketBuff[25]);
+	int tmp[4];
+	tmp[0] = (int)(PacketBuff[10] << 24) | (PacketBuff[11] << 16) | (PacketBuff[12] << 8) | (PacketBuff[13]);
+	tmp[1] = (int)(PacketBuff[14] << 24) | (PacketBuff[15] << 16) | (PacketBuff[16] << 8) | (PacketBuff[17]);
+	tmp[2] = (int)(PacketBuff[18] << 24) | (PacketBuff[19] << 16) | (PacketBuff[20] << 8) | (PacketBuff[21]);
+	tmp[3] = (int)(PacketBuff[22] << 24) | (PacketBuff[23] << 16) | (PacketBuff[24] << 8) | (PacketBuff[25]);
+	(*PlayerBonePoses)[1].W = tmp[0]/ 100000000.0f;
+	(*PlayerBonePoses)[1].X = tmp[1] / 100000000.0f;
+	(*PlayerBonePoses)[1].Y = tmp[2] / 100000000.0f;
+	(*PlayerBonePoses)[1].Z = tmp[3] / 100000000.0f;
 
     return 0;
 }
+
 // 一个mpu的数据转quat
 uint8 FPacketManage::dmpGetQuaternionL(int16 *data, const uint8 *packet)
 {

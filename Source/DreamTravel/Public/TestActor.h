@@ -9,7 +9,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(TestActor, Log, All);
 
-#define BONE_NUMS (6)		// mpu节点数
+#define BONE_NUMS (2)		// mpu节点数
 
 class FPacketManage;
 class UStaticMeshComponent;

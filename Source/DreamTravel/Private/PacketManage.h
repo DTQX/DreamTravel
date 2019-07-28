@@ -9,10 +9,12 @@
 DECLARE_LOG_CATEGORY_EXTERN(PacketManage, Log, All);
 
 // 数据相关
-#define PACKET_SIZE  (52)     // 一个packet包字节数， mpu数 * 一个mpu数据大小 + 4 ； 6*8+4
-#define PURE_PACKET_SIZE (48)	// 一个packet包的内容字节数
-#define PACKET_BUFF_SIZE (1024)		// 数据缓存区大小
+#define MPU_NUM (1)
 #define UNIT_PACKET_SIZE (8)		// 一个mpu的数据大小
+#define PACKET_SIZE  (28)     // 一个packet包字节数， mpu数 * 一个mpu数据大小 + 4 ； 6*8+4
+//#define PACKET_SIZE  (MPU_NUM * UNIT_PACKET_SIZE + 4)     // 一个packet包字节数， mpu数 * 一个mpu数据大小 + 4 ； 6*8+4
+#define PURE_PACKET_SIZE (MPU_NUM * UNIT_PACKET_SIZE)	// 一个packet包的内容字节数
+#define PACKET_BUFF_SIZE (1024)		// 数据缓存区大小
 
 class FSerialClass;
 /**
@@ -64,8 +66,8 @@ private:
 	int readPacketSize;		// 已读取的字节数
 
 	// 端口相关
-	//const int COM_PORT = 3;		// 端口号
-	const int COM_PORT = 6;		// 端口号
+	const int COM_PORT = 4;		// 端口号
+	//const int COM_PORT = 6;		// 端口号
 	const int COM_RATE = 115200;	// 串口速率
 
   int ReadLastPacket();   // 读取数据包
